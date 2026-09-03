@@ -66,20 +66,23 @@ struct MastConfigurationParserTests {
     }
 
     @Test
-    func discoversContentFoldersAndIgnoresRepositoryReadmes() throws {
+    func discoversOnlyFoldersContainingPostIndexFolders() throws {
         let rootURL = URL.temporaryDirectory.appending(path: UUID().uuidString)
         let contentURL = rootURL.appending(path: "content/blog/post")
+        let localizedPostURL = rootURL.appending(path: "content/blog/localized-post")
         let notesURL = rootURL.appending(path: "notes")
         try FileManager.default.createDirectory(at: contentURL, withIntermediateDirectories: true)
+        try FileManager.default.createDirectory(at: localizedPostURL, withIntermediateDirectories: true)
         try FileManager.default.createDirectory(at: notesURL, withIntermediateDirectories: true)
         defer { try? FileManager.default.removeItem(at: rootURL) }
         try "# Post".write(to: contentURL.appending(path: "index.md"), atomically: true, encoding: .utf8)
+        try "# Post".write(to: localizedPostURL.appending(path: "index.en.mdx"), atomically: true, encoding: .utf8)
         try "# Note".write(to: notesURL.appending(path: "readme.md"), atomically: true, encoding: .utf8)
         try "# Root".write(to: rootURL.appending(path: "README.md"), atomically: true, encoding: .utf8)
 
         let discovery = MarkdownContentDiscovery.discover(at: rootURL)
 
-        #expect(discovery.packages.map(\.path) == ["content/blog", "content/blog/post", "notes"])
+        #expect(discovery.packages.map(\.path) == ["content/blog"])
         #expect(!discovery.hasRootMarkdown)
     }
 
