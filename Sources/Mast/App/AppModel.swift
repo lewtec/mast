@@ -9,8 +9,17 @@ final class AppModel {
     var editorText = ""
     var errorMessage: String?
     var isShowingError = false
+    var setupRootURL: URL?
+    var isShowingSetup = false
 
     func openProject(at rootURL: URL) {
+        let configurationURL = rootURL.appending(path: "mast.toml")
+        guard FileManager.default.fileExists(atPath: configurationURL.path()) else {
+            setupRootURL = rootURL
+            isShowingSetup = true
+            return
+        }
+
         do {
             let loadedProject = try ProjectLoader.load(at: rootURL)
             project = loadedProject
@@ -22,6 +31,12 @@ final class AppModel {
             errorMessage = error.localizedDescription
             isShowingError = true
         }
+    }
+
+    func finishSetup(at rootURL: URL) {
+        isShowingSetup = false
+        setupRootURL = nil
+        openProject(at: rootURL)
     }
 
     func selectPost(_ post: Post?) {

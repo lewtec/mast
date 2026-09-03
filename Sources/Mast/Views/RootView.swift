@@ -24,6 +24,13 @@ struct RootView: View {
                 model.isShowingError = true
             }
         }
+        .sheet(isPresented: $model.isShowingSetup) {
+            if let rootURL = model.setupRootURL {
+                NavigationStack {
+                    OnboardingView(rootURL: rootURL, complete: model.finishSetup)
+                }
+            }
+        }
         .alert("Could not open project", isPresented: $model.isShowingError) {
             Button("OK") {
                 model.errorMessage = nil

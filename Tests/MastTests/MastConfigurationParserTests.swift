@@ -1,4 +1,5 @@
 import Testing
+import Foundation
 @testable import Mast
 
 struct MastConfigurationParserTests {
@@ -42,5 +43,27 @@ struct MastConfigurationParserTests {
             route = "/{path}"
             """)
         }
+    }
+
+    @Test
+    func writerCreatesConfigurationThatTheParserCanRead() throws {
+        let rootURL = URL.temporaryDirectory.appending(path: UUID().uuidString)
+        try FileManager.default.createDirectory(at: rootURL, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: rootURL) }
+
+        try MastConfigurationWriter.write(
+            to: rootURL,
+            preset: "hugo",
+            command: "hugo server --port {port}",
+            url: "http://127.0.0.1:{port}",
+            packageName: "blog",
+            contentPath: "content",
+            route: "/{path}"
+        )
+
+        let source = try String(contentsOf: rootURL.appending(path: "mast.toml"), encoding: .utf8)
+        let configuration = try MastConfigurationParser.parse(source)
+
+        #expect(configuration.packages.first?.path == "content")
     }
 }
