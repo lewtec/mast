@@ -14,14 +14,14 @@ struct NativeWorkspaceSplitView<Sidebar: View, Content: View, Inspector: View>: 
 
     func makeNSViewController(context: Context) -> NSSplitViewController {
         let controller = NSSplitViewController()
-        let sidebarItem = NSSplitViewItem(sidebarWithViewController: NSHostingController(rootView: sidebar))
+        let sidebarItem = NSSplitViewItem(viewController: NSHostingController(rootView: sidebar))
         sidebarItem.minimumThickness = 220
         sidebarItem.maximumThickness = 800
         sidebarItem.preferredThicknessFraction = 0.22
 
         let contentItem = NSSplitViewItem(viewController: NSHostingController(rootView: content))
 
-        let inspectorItem = NSSplitViewItem(inspectorWithViewController: NSHostingController(rootView: inspector))
+        let inspectorItem = NSSplitViewItem(viewController: NSHostingController(rootView: inspector))
         inspectorItem.minimumThickness = 320
         inspectorItem.maximumThickness = 800
         inspectorItem.preferredThicknessFraction = 0.33
