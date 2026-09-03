@@ -20,6 +20,8 @@ enum ServerStatus: Equatable {
 @MainActor
 @Observable
 final class AppModel {
+    private static let autosaveDelay = Duration.seconds(1)
+
     private(set) var project: Project?
     var selectedPost: Post?
     var editorText = ""
@@ -72,7 +74,7 @@ final class AppModel {
         let text = editorText
         saveTask?.cancel()
         saveTask = Task { [weak self] in
-            try? await Task.sleep(for: .milliseconds(500))
+            try? await Task.sleep(for: Self.autosaveDelay)
             guard !Task.isCancelled else { return }
             self?.save(text, to: post)
         }
