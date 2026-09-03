@@ -178,11 +178,11 @@ struct MastConfigurationParserTests {
         let view = PostListView(
             posts: [english, portuguese],
             selection: .constant(english),
-            showLanguagesSeparately: .constant(false),
             configureProject: {}
         )
 
         #expect(view.displayPosts == [english])
+        #expect(view.languages(for: english) == ["en", "pt"])
     }
 
     @Test

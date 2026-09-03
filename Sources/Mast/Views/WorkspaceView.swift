@@ -7,7 +7,6 @@ struct WorkspaceView: View {
     @State private var isShowingNewPost = false
     @State private var isPostsVisible = true
     @State private var isPreviewVisible = true
-    @AppStorage("showLanguagesSeparately") private var showLanguagesSeparately = false
 
     var body: some View {
         NativeWorkspaceSplitView(
@@ -16,7 +15,6 @@ struct WorkspaceView: View {
             sidebar: PostListView(
                 posts: project.posts,
                 selection: $model.selectedPost,
-                showLanguagesSeparately: $showLanguagesSeparately,
                 configureProject: showProjectSetup
             ),
             content: EditorView(
