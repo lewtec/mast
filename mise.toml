@@ -1,0 +1,47 @@
+[tools]
+xcodegen = "2.46.0"
+
+[tasks.generate]
+description = "Regenerate Mast.xcodeproj from project.yml"
+run = "xcodegen generate"
+
+[tasks.install]
+description = "Generate the Xcode project"
+depends = ["generate"]
+
+[tasks."build:dir"]
+hide = true
+run = "mkdir -p build/DerivedData.noindex"
+
+[tasks.build]
+description = "Release-build the Mac app"
+run = "xcodebuild -project Mast.xcodeproj -scheme Mast -configuration Release -destination 'platform=macOS,arch=arm64' -derivedDataPath build/DerivedData.noindex -skipPackagePluginValidation SWIFT_ENABLE_TESTABILITY=YES ENABLE_TESTABILITY=YES build"
+depends = ["generate", "build:dir"]
+
+[tasks.debug]
+description = "Debug-build the Mac app"
+run = "xcodebuild -project Mast.xcodeproj -scheme Mast -configuration Debug -destination 'platform=macOS,arch=arm64' -derivedDataPath build/DerivedData.noindex -skipPackagePluginValidation build"
+depends = ["generate", "build:dir"]
+
+[tasks.run]
+description = "Release-build and launch the Mac app"
+alias = "default"
+depends = ["build"]
+run = '''
+set -euo pipefail
+app="build/DerivedData.noindex/Build/Products/Release/Mast.app"
+if [[ ! -d "$app" ]]; then
+  echo "run: missing $app" >&2
+  exit 1
+fi
+open "$app"
+'''
+
+[tasks.test]
+description = "Run unit tests"
+run = "xcodebuild -project Mast.xcodeproj -scheme Mast -configuration Debug -destination 'platform=macOS,arch=arm64' -derivedDataPath build/DerivedData.noindex -skipPackagePluginValidation test"
+depends = ["generate", "build:dir"]
+
+[tasks.ci]
+description = "Run CI checks"
+depends = ["test"]

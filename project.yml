@@ -1,0 +1,49 @@
+name: Mast
+options:
+  bundleIdPrefix: app.mast
+  deploymentTarget:
+    macOS: "15.0"
+  createIntermediateGroups: true
+  groupSortPosition: top
+settings:
+  base:
+    MACOSX_DEPLOYMENT_TARGET: "15.0"
+    SWIFT_VERSION: "6.0"
+    GENERATE_INFOPLIST_FILE: YES
+    ENABLE_APP_SANDBOX: NO
+    CODE_SIGN_IDENTITY: "-"
+    CODE_SIGNING_REQUIRED: NO
+    DEVELOPMENT_TEAM: ""
+targets:
+  Mast:
+    type: application
+    platform: macOS
+    sources:
+      - path: Sources/Mast
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: app.mast.editor
+        PRODUCT_NAME: Mast
+        MARKETING_VERSION: "0.1.0"
+        CURRENT_PROJECT_VERSION: "1"
+        INFOPLIST_KEY_CFBundleDisplayName: Mast
+        INFOPLIST_KEY_LSApplicationCategoryType: public.app-category.productivity
+        INFOPLIST_KEY_LSMinimumSystemVersion: "15.0"
+        ENABLE_TESTABILITY: YES
+        SWIFT_ENABLE_TESTABILITY: YES
+    scheme:
+      testTargets:
+        - MastTests
+  MastTests:
+    type: bundle.unit-test
+    platform: macOS
+    sources:
+      - path: Tests/MastTests
+    dependencies:
+      - target: Mast
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: app.mast.editor.tests
+        GENERATE_INFOPLIST_FILE: YES
+        TEST_HOST: "$(BUILT_PRODUCTS_DIR)/Mast.app/Contents/MacOS/Mast"
+        BUNDLE_LOADER: "$(TEST_HOST)"
