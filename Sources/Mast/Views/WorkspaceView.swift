@@ -47,6 +47,9 @@ struct WorkspaceView: View {
                         isPostsVisible.toggle()
                     }
                     ServerStatusIndicator(status: model.serverStatus, message: model.serverMessage)
+                    Button("Restart server", systemImage: "arrow.clockwise") {
+                        model.restartServer()
+                    }
                     Button("New post", systemImage: "plus", action: showNewPost)
                         .labelStyle(.iconOnly)
                 }

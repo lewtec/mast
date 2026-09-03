@@ -62,6 +62,11 @@ final class AppModel {
         }
     }
 
+    func restartServer() {
+        guard let project else { return }
+        startServer(for: project)
+    }
+
     func scheduleSave() {
         guard let post = selectedPost else { return }
         let text = editorText
