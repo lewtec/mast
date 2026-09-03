@@ -10,7 +10,7 @@ enum MarkdownContentDiscovery {
         )
         let rootPath = rootURL.resolvingSymlinksInPath().path()
 
-        var folders: Set<String> = []
+        var folders: [String: Set<String>] = [:]
         var hasRootMarkdown = false
         while let fileURL = enumerator?.nextObject() as? URL {
             guard isPostIndex(fileURL) else { continue }
@@ -24,12 +24,22 @@ enum MarkdownContentDiscovery {
             }
 
             guard folderComponents.count > 1 else { continue }
-            folders.insert(folderComponents.dropLast().joined(separator: "/"))
+            let packagePath = folderComponents.dropLast().joined(separator: "/")
+            if let language = language(for: fileURL) {
+                folders[packagePath, default: []].insert(language)
+            } else if folders[packagePath] == nil {
+                folders[packagePath] = []
+            }
         }
 
         return MarkdownDiscoveryResult(
-            packages: folders.sorted().map { folder in
-                SetupPackage(name: folder.split(separator: "/").last.map(String.init) ?? folder, path: folder, route: "/{path}")
+            packages: folders.keys.sorted().map { folder in
+                SetupPackage(
+                    name: folder.split(separator: "/").last.map(String.init) ?? folder,
+                    path: folder,
+                    route: "/{path}",
+                    languages: folders[folder, default: []].sorted()
+                )
             },
             hasRootMarkdown: hasRootMarkdown
         )
@@ -39,5 +49,11 @@ enum MarkdownContentDiscovery {
         guard ["md", "mdx"].contains(fileURL.pathExtension) else { return false }
         let stem = fileURL.deletingPathExtension().lastPathComponent
         return stem == "index" || stem.hasPrefix("index.")
+    }
+
+    private static func language(for fileURL: URL) -> String? {
+        let stem = fileURL.deletingPathExtension().lastPathComponent
+        guard stem.hasPrefix("index.") else { return nil }
+        return String(stem.dropFirst("index.".count))
     }
 }

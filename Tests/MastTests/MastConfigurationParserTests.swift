@@ -56,13 +56,14 @@ struct MastConfigurationParserTests {
             preset: "hugo",
             command: "hugo server --port {port}",
             url: "http://127.0.0.1:{port}",
-            packages: [SetupPackage(name: "blog", path: "content", route: "/{path}")]
+            packages: [SetupPackage(name: "blog", path: "content", route: "/{path}", languages: ["pt", "en"])]
         )
 
         let source = try String(contentsOf: rootURL.appending(path: "mast.toml"), encoding: .utf8)
         let configuration = try MastConfigurationParser.parse(source)
 
         #expect(configuration.packages.first?.path == "content")
+        #expect(configuration.packages.first?.languages == ["pt", "en"])
     }
 
     @Test
@@ -77,12 +78,14 @@ struct MastConfigurationParserTests {
         defer { try? FileManager.default.removeItem(at: rootURL) }
         try "# Post".write(to: contentURL.appending(path: "index.md"), atomically: true, encoding: .utf8)
         try "# Post".write(to: localizedPostURL.appending(path: "index.en.mdx"), atomically: true, encoding: .utf8)
+        try "# Post".write(to: localizedPostURL.appending(path: "index.pt.md"), atomically: true, encoding: .utf8)
         try "# Note".write(to: notesURL.appending(path: "readme.md"), atomically: true, encoding: .utf8)
         try "# Root".write(to: rootURL.appending(path: "README.md"), atomically: true, encoding: .utf8)
 
         let discovery = MarkdownContentDiscovery.discover(at: rootURL)
 
         #expect(discovery.packages.map(\.path) == ["content/blog"])
+        #expect(discovery.packages.first?.languages == ["en", "pt"])
         #expect(!discovery.hasRootMarkdown)
     }
 

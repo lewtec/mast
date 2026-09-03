@@ -5,4 +5,12 @@ struct SetupPackage: Identifiable, Equatable {
     var name: String
     var path: String
     var route: String
+    var languages: [String]
+
+    init(name: String, path: String, route: String, languages: [String] = []) {
+        self.name = name
+        self.path = path
+        self.route = route
+        self.languages = languages
+    }
 }
