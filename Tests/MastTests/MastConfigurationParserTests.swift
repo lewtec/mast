@@ -174,6 +174,7 @@ struct MastConfigurationParserTests {
         let view = PostListView(
             posts: [english, portuguese],
             selection: .constant(english),
+            showLanguagesSeparately: .constant(false),
             configureProject: {},
             editConfiguration: {}
         )
@@ -232,5 +233,9 @@ struct MastConfigurationParserTests {
         #expect(FileManager.default.fileExists(atPath: rootURL.appending(path: "content/posts/hello/index.en.md").path()))
         #expect(model.project?.posts.count == 1)
         #expect(model.selectedPost?.fileURL.lastPathComponent == "index.en.md")
+        let englishPost = try #require(model.selectedPost)
+        #expect(model.addLanguage("pt", to: englishPost))
+        #expect(FileManager.default.fileExists(atPath: rootURL.appending(path: "content/posts/hello/index.pt.md").path()))
+        #expect(model.selectedPost?.fileURL.lastPathComponent == "index.pt.md")
     }
 }

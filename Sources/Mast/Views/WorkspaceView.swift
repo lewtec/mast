@@ -8,6 +8,7 @@ struct WorkspaceView: View {
     @State private var isShowingNewPost = false
     @State private var isPostsVisible = true
     @State private var isPreviewVisible = true
+    @AppStorage("showLanguagesSeparately") private var showLanguagesSeparately = false
 
     var body: some View {
         NativeWorkspaceSplitView(
@@ -16,6 +17,7 @@ struct WorkspaceView: View {
             sidebar: PostListView(
                 posts: project.posts,
                 selection: $model.selectedPost,
+                showLanguagesSeparately: $showLanguagesSeparately,
                 configureProject: showProjectSetup,
                 editConfiguration: showConfiguration
             ),
@@ -60,6 +62,17 @@ struct WorkspaceView: View {
                     .frame(maxWidth: 180)
                 }
 
+                if !missingLanguages.isEmpty {
+                    Menu("Add language", systemImage: "plus") {
+                        ForEach(missingLanguages, id: \.self) { language in
+                            Button(language) {
+                                guard let post = model.selectedPost else { return }
+                                _ = model.addLanguage(language, to: post)
+                            }
+                        }
+                    }
+                }
+
                 Button(
                     isPreviewVisible ? "Hide preview" : "Show preview",
                     systemImage: "sidebar.right"
@@ -102,6 +115,15 @@ struct WorkspaceView: View {
         guard let selection = model.selectedPost else { return [] }
         return project.posts.filter {
             $0.packageName == selection.packageName && $0.relativePath == selection.relativePath
+        }
+    }
+
+    private var missingLanguages: [String] {
+        guard let selection = model.selectedPost,
+              let package = project.configuration.packages.first(where: { $0.name == selection.packageName })
+        else { return [] }
+        return package.languages.filter { language in
+            !languagePosts.contains { $0.language == language }
         }
     }
 

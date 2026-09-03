@@ -130,6 +130,29 @@ final class AppModel {
         }
     }
 
+    func addLanguage(_ language: String, to post: Post) -> Bool {
+        guard let project,
+              let package = project.configuration.packages.first(where: { $0.name == post.packageName }),
+              package.languages.contains(language)
+        else { return false }
+
+        let extensionName = post.fileURL.pathExtension
+        let fileURL = post.fileURL.deletingLastPathComponent().appending(path: "index.\(language).\(extensionName)")
+        guard !FileManager.default.fileExists(atPath: fileURL.path()) else { return false }
+
+        do {
+            try "".write(to: fileURL, atomically: true, encoding: .utf8)
+            let reloadedProject = try ProjectLoader.load(at: project.rootURL)
+            self.project = reloadedProject
+            selectPost(reloadedProject.posts.first { $0.fileURL == fileURL })
+            return true
+        } catch {
+            errorMessage = "Mast could not add \(language): \(error.localizedDescription)"
+            isShowingError = true
+            return false
+        }
+    }
+
     private func save(_ text: String, to post: Post) {
         do {
             try text.write(to: post.fileURL, atomically: true, encoding: .utf8)
