@@ -1,6 +1,6 @@
-# Bloged terminology
+# Mast terminology
 
-Use these terms in Bloged documentation, UI text, and code comments.
+Use these terms in Mast documentation, UI text, and code comments.
 
 | Concept | Approved term | Do not use |
 | --- | --- | --- |

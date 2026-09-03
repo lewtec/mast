@@ -1,17 +1,17 @@
-# Bloged v1 specification
+# Mast v1 specification
 
 ## Purpose
 
-Bloged is a macOS desktop editor for blogs built from Markdown files. It edits post files on disk and shows the running blog beside the editor.
+Mast is a macOS desktop editor for blogs built from Markdown files. It edits post files on disk and shows the running blog beside the editor.
 
 The first release targets writers who use a local content folder and a static-site generator or development server.
 
 ## Scope
 
-Bloged v1 supports these tasks:
+Mast v1 supports these tasks:
 
 - Open a blog project from a recent-project screen.
-- Create `bloged.toml` through a short setup flow when the project does not contain one.
+- Create `mast.toml` through a short setup flow when the project does not contain one.
 - Edit a Markdown post in a plain-text editor.
 - Save edits with autosave and `Command-S`.
 - Start, restart, and stop a local development server.
@@ -20,17 +20,17 @@ Bloged v1 supports these tasks:
 - Open posts and commands from the `Command-K` palette.
 - Paste an image into the editor and save it beside the post.
 
-Bloged v1 does not include WYSIWYG editing, source control, deployment, a content API, or a general-purpose file explorer.
+Mast v1 does not include WYSIWYG editing, source control, deployment, a content API, or a general-purpose file explorer.
 
 ## Platform and application model
 
-Bloged v1 is a native macOS app built with SwiftUI. It uses `NSTextView` for Markdown editing and `WKWebView` for the preview.
+Mast v1 is a native macOS app built with SwiftUI. It uses `NSTextView` for Markdown editing and `WKWebView` for the preview.
 
 The app stores its interface state locally. It never stores post content outside the selected project.
 
 ## Project configuration
 
-Each project has a `bloged.toml` file at the repository root. This file is the source of truth for server and content settings.
+Each project has a `mast.toml` file at the repository root. This file is the source of truth for server and content settings.
 
 ```toml
 [server]
@@ -64,7 +64,7 @@ The `[server]` table defines the local development server.
 
 Before the app starts the command, it selects an available local port and replaces every `{port}` placeholder. This avoids depending on server log output and avoids port conflicts.
 
-The command runs from the project root. Bloged keeps the editor available if the server fails. The command palette provides **Start server** and **Restart server**. Bloged stops the server when you close or change the project.
+The command runs from the project root. Mast keeps the editor available if the server fails. The command palette provides **Start server** and **Restart server**. Mast stops the server when you close or change the project.
 
 ### Presets
 
@@ -80,7 +80,7 @@ The preset fills initial values only. You can edit `command` and `url` after set
 
 ### Content packages
 
-The `[content.packages]` table contains named content packages. Bloged shows the package name.
+The `[content.packages]` table contains named content packages. Mast shows the package name.
 
 | Key | Type | Required | Description |
 | --- | --- | --- | --- |
@@ -96,9 +96,9 @@ For the post folder `content/docs/guides/getting-started` in the `docs` package,
 
 The first screen lists recent projects, in the style of a document app. You can open a recent project or select another folder.
 
-If a selected folder has no `bloged.toml`, Bloged opens setup. Setup asks for the project folder, content packages, server preset, command, and preview URL. It writes `bloged.toml` only after you confirm the values.
+If a selected folder has no `mast.toml`, Mast opens setup. Setup asks for the project folder, content packages, server preset, command, and preview URL. It writes `mast.toml` only after you confirm the values.
 
-Bloged remembers each project's last post, cursor position, scroll position, preview visibility, and recent-project entry.
+Mast remembers each project's last post, cursor position, scroll position, preview visibility, and recent-project entry.
 
 ## Main window
 
@@ -112,27 +112,27 @@ The editor is a plain-text Markdown editor with a monospaced font and line numbe
 
 `Command-K` opens the command palette. The palette is the primary navigation surface. It can open a post, open a recent project, start or restart the server, show or hide the preview, and open project settings.
 
-The preview can navigate freely. When a preview URL matches a package `route`, Bloged opens the matching post and language in the editor. When the URL does not match a post, such as a home or tag page, Bloged keeps the current post open.
+The preview can navigate freely. When a preview URL matches a package `route`, Mast opens the matching post and language in the editor. When the URL does not match a post, such as a home or tag page, Mast keeps the current post open.
 
-Bloged does not show a permanent file tree in v1.
+Mast does not show a permanent file tree in v1.
 
 ## Saving and external changes
 
-Bloged saves after a short debounce when you stop typing. `Command-S` saves immediately. The editor shows a small saved or saving state.
+Mast saves after a short debounce when you stop typing. `Command-S` saves immediately. The editor shows a small saved or saving state.
 
-If the open file changes on disk and Bloged has no local pending edit, Bloged reloads the file. If it has a local pending edit, Bloged asks you to keep the editor version, reload the disk version, or compare both versions.
+If the open file changes on disk and Mast has no local pending edit, Mast reloads the file. If it has a local pending edit, Mast asks you to keep the editor version, reload the disk version, or compare both versions.
 
 ## Image paste
 
-When you paste an image, Bloged saves the image in the open post folder and inserts a relative Markdown reference at the cursor.
+When you paste an image, Mast saves the image in the open post folder and inserts a relative Markdown reference at the cursor.
 
-Bloged uses the source filename when clipboard metadata or image metadata supplies one. Otherwise, it uses `image-YYYY-MM-DD-HHMMSS.png`. The initial inserted text is `![](./FILENAME.png)`.
+Mast uses the source filename when clipboard metadata or image metadata supplies one. Otherwise, it uses `image-YYYY-MM-DD-HHMMSS.png`. The initial inserted text is `![](./FILENAME.png)`.
 
-If the target filename exists, Bloged asks whether to replace the existing file or save with another name. Bloged never replaces an image without confirmation.
+If the target filename exists, Mast asks whether to replace the existing file or save with another name. Mast never replaces an image without confirmation.
 
 ## Acceptance criteria
 
-Bloged v1 is ready when these flows work:
+Mast v1 is ready when these flows work:
 
 1. You can create a project configuration from setup and reopen it from recent projects.
 2. You can open, edit, autosave, and immediately save an `index.md` or `index.<language>.md` file.
