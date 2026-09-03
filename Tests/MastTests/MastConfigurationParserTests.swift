@@ -143,6 +143,32 @@ struct MastConfigurationParserTests {
         #expect(project.posts.map(\.fileURL.lastPathComponent) == ["index.md", "index.mdx"])
     }
 
+    @MainActor
+    @Test
+    func groupsPostLanguagesInThePostList() {
+        let english = Post(
+            fileURL: URL(filePath: "/tmp/hello/index.en.md"),
+            packageName: "posts",
+            language: "en",
+            relativePath: "hello"
+        )
+        let portuguese = Post(
+            fileURL: URL(filePath: "/tmp/hello/index.pt.md"),
+            packageName: "posts",
+            language: "pt",
+            relativePath: "hello"
+        )
+
+        let view = PostListView(
+            posts: [english, portuguese],
+            selection: .constant(english),
+            configureProject: {},
+            editConfiguration: {}
+        )
+
+        #expect(view.displayPosts == [english])
+    }
+
     @Test
     func resolvesPreviewRouteForSelectedPostLanguage() {
         let package = ContentPackage(
