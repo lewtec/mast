@@ -1,0 +1,541 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		06657A8CA023D8A763396DE4 /* MastConfigurationWriter.swift in Sources */ = {isa = PBXBuildFile; fileRef = B06ADED83F166C02E92FF07C /* MastConfigurationWriter.swift */; };
+		14E92B500934229A0B8C4F78 /* MarkdownContentDiscovery.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2932B8315B4F7560635AA83 /* MarkdownContentDiscovery.swift */; };
+		160314415A0E645855F409B3 /* SetupPackage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AA14BF2514DD756201CD151 /* SetupPackage.swift */; };
+		18A754D63C23824C94B9A7E6 /* ServerConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9364A0FD86D8486E6B1B00D2 /* ServerConfiguration.swift */; };
+		2DD5EA14DBF86ABA656D5288 /* PreviewPlaceholderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1870911D2B049EC9E4614FE /* PreviewPlaceholderView.swift */; };
+		3A25B00B908CEAFAD71FB24C /* PackageBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEB5FA73170DC734D618F3AA /* PackageBuilder.swift */; };
+		553B106ACF26E777D2D0DEA8 /* MastApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D701FDC3A64E2679FC5DB89 /* MastApp.swift */; };
+		5B86A1D195149D44FB792786 /* Project.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D67944C40BA7009B6B79223 /* Project.swift */; };
+		625D7679877A4C9C1DE0E9B5 /* WelcomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E15DAAF5A9D0D6B8DC9C4BDA /* WelcomeView.swift */; };
+		69A3C4B7379E8BBA9AA3E2C8 /* EditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A67E67134771F617DDA5DAFE /* EditorView.swift */; };
+		6DEB8F6F36CBC14361449AA4 /* MastConfigurationParserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 62180A10C7951D3E87C84EAC /* MastConfigurationParserTests.swift */; };
+		732EB1DE160312C900B0BCEE /* Post.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9A2CBEC9005AED22BC56B8F /* Post.swift */; };
+		78CA8112904299F22DB3229A /* MastConfigurationError.swift in Sources */ = {isa = PBXBuildFile; fileRef = F61DDF8E6838FDC791F97187 /* MastConfigurationError.swift */; };
+		81A01958B8823B80476566D3 /* ProjectLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 371ABE72E51E386722D880C6 /* ProjectLoader.swift */; };
+		881D94AEE6DDCD1E0750564C /* AppModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 440CC428DF9C60BDACE703B0 /* AppModel.swift */; };
+		8AF0108FB2DE5D549DD67CD5 /* WorkspaceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 746CDB34DE14CED42953832E /* WorkspaceView.swift */; };
+		95AEB604D12F15DE6F94C725 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15AAFCFE3052F7C38D1332D7 /* RootView.swift */; };
+		9C0FB2EAFE2C0D859439E61F /* MastConfigurationParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D79FC5A39106117CFAC4F77 /* MastConfigurationParser.swift */; };
+		A086A6E6ADDC4D75420C9FA4 /* OnboardingDefaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 856432989A1A1243796202F6 /* OnboardingDefaults.swift */; };
+		A49944CF2E76262BC8686826 /* ContentPackage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 329797B1212A22003715F815 /* ContentPackage.swift */; };
+		B535BB56BB690F7280A0728B /* PostListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C13274E2F8C443ACC965CAA /* PostListView.swift */; };
+		B5889E80DE5A5EB9F39F505C /* MastConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0606C29B14D424CFBE3D8F92 /* MastConfiguration.swift */; };
+		EB79D0D2A9BB79E733693EF0 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6C542D23F8B7CC07FE8CF94 /* OnboardingView.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		B9D5BE13A409754D6CE7BBA2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AE100537A8459AAB89BD2215 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 3E11E7B269C03A22986314F6;
+			remoteInfo = Mast;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		0606C29B14D424CFBE3D8F92 /* MastConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MastConfiguration.swift; sourceTree = "<group>"; };
+		0C13274E2F8C443ACC965CAA /* PostListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostListView.swift; sourceTree = "<group>"; };
+		15AAFCFE3052F7C38D1332D7 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
+		27B01D46588533900C97F462 /* Mast.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Mast.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		2AA14BF2514DD756201CD151 /* SetupPackage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupPackage.swift; sourceTree = "<group>"; };
+		329797B1212A22003715F815 /* ContentPackage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentPackage.swift; sourceTree = "<group>"; };
+		371ABE72E51E386722D880C6 /* ProjectLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectLoader.swift; sourceTree = "<group>"; };
+		3D67944C40BA7009B6B79223 /* Project.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Project.swift; sourceTree = "<group>"; };
+		440CC428DF9C60BDACE703B0 /* AppModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppModel.swift; sourceTree = "<group>"; };
+		62180A10C7951D3E87C84EAC /* MastConfigurationParserTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MastConfigurationParserTests.swift; sourceTree = "<group>"; };
+		746CDB34DE14CED42953832E /* WorkspaceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceView.swift; sourceTree = "<group>"; };
+		856432989A1A1243796202F6 /* OnboardingDefaults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingDefaults.swift; sourceTree = "<group>"; };
+		8D79FC5A39106117CFAC4F77 /* MastConfigurationParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MastConfigurationParser.swift; sourceTree = "<group>"; };
+		9364A0FD86D8486E6B1B00D2 /* ServerConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerConfiguration.swift; sourceTree = "<group>"; };
+		9D701FDC3A64E2679FC5DB89 /* MastApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MastApp.swift; sourceTree = "<group>"; };
+		A2932B8315B4F7560635AA83 /* MarkdownContentDiscovery.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkdownContentDiscovery.swift; sourceTree = "<group>"; };
+		A67E67134771F617DDA5DAFE /* EditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditorView.swift; sourceTree = "<group>"; };
+		B06ADED83F166C02E92FF07C /* MastConfigurationWriter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MastConfigurationWriter.swift; sourceTree = "<group>"; };
+		BF8050BF87B2E998CF30FE93 /* MastTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MastTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		C9A2CBEC9005AED22BC56B8F /* Post.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Post.swift; sourceTree = "<group>"; };
+		CEB5FA73170DC734D618F3AA /* PackageBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackageBuilder.swift; sourceTree = "<group>"; };
+		E15DAAF5A9D0D6B8DC9C4BDA /* WelcomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeView.swift; sourceTree = "<group>"; };
+		E1870911D2B049EC9E4614FE /* PreviewPlaceholderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewPlaceholderView.swift; sourceTree = "<group>"; };
+		F61DDF8E6838FDC791F97187 /* MastConfigurationError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MastConfigurationError.swift; sourceTree = "<group>"; };
+		F6C542D23F8B7CC07FE8CF94 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		0DE945179254A4D235B959A5 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				440CC428DF9C60BDACE703B0 /* AppModel.swift */,
+				9D701FDC3A64E2679FC5DB89 /* MastApp.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		233352D320775BC5CF682FE2 /* Configuration */ = {
+			isa = PBXGroup;
+			children = (
+				329797B1212A22003715F815 /* ContentPackage.swift */,
+				A2932B8315B4F7560635AA83 /* MarkdownContentDiscovery.swift */,
+				0606C29B14D424CFBE3D8F92 /* MastConfiguration.swift */,
+				F61DDF8E6838FDC791F97187 /* MastConfigurationError.swift */,
+				8D79FC5A39106117CFAC4F77 /* MastConfigurationParser.swift */,
+				B06ADED83F166C02E92FF07C /* MastConfigurationWriter.swift */,
+				856432989A1A1243796202F6 /* OnboardingDefaults.swift */,
+				CEB5FA73170DC734D618F3AA /* PackageBuilder.swift */,
+				9364A0FD86D8486E6B1B00D2 /* ServerConfiguration.swift */,
+				2AA14BF2514DD756201CD151 /* SetupPackage.swift */,
+			);
+			path = Configuration;
+			sourceTree = "<group>";
+		};
+		3E113FF843F9ADBA0A72449F /* Mast */ = {
+			isa = PBXGroup;
+			children = (
+				0DE945179254A4D235B959A5 /* App */,
+				233352D320775BC5CF682FE2 /* Configuration */,
+				B7172B120BCAC09513F47EEC /* Project */,
+				62DD1746EB2EF0203B414203 /* Views */,
+			);
+			path = Mast;
+			sourceTree = "<group>";
+		};
+		49CB7BE4EC0191D68FEC67D8 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				27B01D46588533900C97F462 /* Mast.app */,
+				BF8050BF87B2E998CF30FE93 /* MastTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		62DD1746EB2EF0203B414203 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				A67E67134771F617DDA5DAFE /* EditorView.swift */,
+				F6C542D23F8B7CC07FE8CF94 /* OnboardingView.swift */,
+				0C13274E2F8C443ACC965CAA /* PostListView.swift */,
+				E1870911D2B049EC9E4614FE /* PreviewPlaceholderView.swift */,
+				15AAFCFE3052F7C38D1332D7 /* RootView.swift */,
+				E15DAAF5A9D0D6B8DC9C4BDA /* WelcomeView.swift */,
+				746CDB34DE14CED42953832E /* WorkspaceView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		B4434EA9DEFE644A67FD1520 /* Tests */ = {
+			isa = PBXGroup;
+			children = (
+				E47436D29334509DFCB99789 /* MastTests */,
+			);
+			path = Tests;
+			sourceTree = "<group>";
+		};
+		B7172B120BCAC09513F47EEC /* Project */ = {
+			isa = PBXGroup;
+			children = (
+				C9A2CBEC9005AED22BC56B8F /* Post.swift */,
+				3D67944C40BA7009B6B79223 /* Project.swift */,
+				371ABE72E51E386722D880C6 /* ProjectLoader.swift */,
+			);
+			path = Project;
+			sourceTree = "<group>";
+		};
+		B9F7CC48814AF6B3A242D7EE /* Sources */ = {
+			isa = PBXGroup;
+			children = (
+				3E113FF843F9ADBA0A72449F /* Mast */,
+			);
+			path = Sources;
+			sourceTree = "<group>";
+		};
+		C276AD9CD2D4CCF43CCA2BCA = {
+			isa = PBXGroup;
+			children = (
+				B9F7CC48814AF6B3A242D7EE /* Sources */,
+				B4434EA9DEFE644A67FD1520 /* Tests */,
+				49CB7BE4EC0191D68FEC67D8 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		E47436D29334509DFCB99789 /* MastTests */ = {
+			isa = PBXGroup;
+			children = (
+				62180A10C7951D3E87C84EAC /* MastConfigurationParserTests.swift */,
+			);
+			path = MastTests;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		3E11E7B269C03A22986314F6 /* Mast */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 75C3C38E6B13804D96145DBB /* Build configuration list for PBXNativeTarget "Mast" */;
+			buildPhases = (
+				ACEA2BA46CE1F6A7E5298D27 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Mast;
+			packageProductDependencies = (
+			);
+			productName = Mast;
+			productReference = 27B01D46588533900C97F462 /* Mast.app */;
+			productType = "com.apple.product-type.application";
+		};
+		8FD9CF1FAD3D42FBCD548B20 /* MastTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 339B1BCFBE16337ED7000CF6 /* Build configuration list for PBXNativeTarget "MastTests" */;
+			buildPhases = (
+				1464BB1030CD81BD850DF276 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				0EF05C9B6F57B2CC3E8F7DFD /* PBXTargetDependency */,
+			);
+			name = MastTests;
+			packageProductDependencies = (
+			);
+			productName = MastTests;
+			productReference = BF8050BF87B2E998CF30FE93 /* MastTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		AE100537A8459AAB89BD2215 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+					3E11E7B269C03A22986314F6 = {
+						DevelopmentTeam = "";
+					};
+					8FD9CF1FAD3D42FBCD548B20 = {
+						DevelopmentTeam = "";
+					};
+				};
+			};
+			buildConfigurationList = 0F2C2C8E40E2262A78AC32B5 /* Build configuration list for PBXProject "Mast" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = C276AD9CD2D4CCF43CCA2BCA;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 49CB7BE4EC0191D68FEC67D8 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				3E11E7B269C03A22986314F6 /* Mast */,
+				8FD9CF1FAD3D42FBCD548B20 /* MastTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		1464BB1030CD81BD850DF276 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6DEB8F6F36CBC14361449AA4 /* MastConfigurationParserTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		ACEA2BA46CE1F6A7E5298D27 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				881D94AEE6DDCD1E0750564C /* AppModel.swift in Sources */,
+				A49944CF2E76262BC8686826 /* ContentPackage.swift in Sources */,
+				69A3C4B7379E8BBA9AA3E2C8 /* EditorView.swift in Sources */,
+				14E92B500934229A0B8C4F78 /* MarkdownContentDiscovery.swift in Sources */,
+				553B106ACF26E777D2D0DEA8 /* MastApp.swift in Sources */,
+				B5889E80DE5A5EB9F39F505C /* MastConfiguration.swift in Sources */,
+				78CA8112904299F22DB3229A /* MastConfigurationError.swift in Sources */,
+				9C0FB2EAFE2C0D859439E61F /* MastConfigurationParser.swift in Sources */,
+				06657A8CA023D8A763396DE4 /* MastConfigurationWriter.swift in Sources */,
+				A086A6E6ADDC4D75420C9FA4 /* OnboardingDefaults.swift in Sources */,
+				EB79D0D2A9BB79E733693EF0 /* OnboardingView.swift in Sources */,
+				3A25B00B908CEAFAD71FB24C /* PackageBuilder.swift in Sources */,
+				732EB1DE160312C900B0BCEE /* Post.swift in Sources */,
+				B535BB56BB690F7280A0728B /* PostListView.swift in Sources */,
+				2DD5EA14DBF86ABA656D5288 /* PreviewPlaceholderView.swift in Sources */,
+				5B86A1D195149D44FB792786 /* Project.swift in Sources */,
+				81A01958B8823B80476566D3 /* ProjectLoader.swift in Sources */,
+				95AEB604D12F15DE6F94C725 /* RootView.swift in Sources */,
+				18A754D63C23824C94B9A7E6 /* ServerConfiguration.swift in Sources */,
+				160314415A0E645855F409B3 /* SetupPackage.swift in Sources */,
+				625D7679877A4C9C1DE0E9B5 /* WelcomeView.swift in Sources */,
+				8AF0108FB2DE5D549DD67CD5 /* WorkspaceView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		0EF05C9B6F57B2CC3E8F7DFD /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 3E11E7B269C03A22986314F6 /* Mast */;
+			targetProxy = B9D5BE13A409754D6CE7BBA2 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		18F38F90524B6CFCA1A03884 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGNING_REQUIRED = NO;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = "";
+				ENABLE_APP_SANDBOX = NO;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 6.0;
+			};
+			name = Release;
+		};
+		841423CC7AD3A5EEE43A2C23 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_TESTABILITY = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = Mast;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
+				INFOPLIST_KEY_LSMinimumSystemVersion = 15.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = app.mast.editor;
+				PRODUCT_NAME = Mast;
+				SDKROOT = macosx;
+				SWIFT_ENABLE_TESTABILITY = YES;
+			};
+			name = Debug;
+		};
+		C0E6958EAAE8AE058F3E3E8B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = app.mast.editor.tests;
+				SDKROOT = macosx;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Mast.app/Contents/MacOS/Mast";
+			};
+			name = Debug;
+		};
+		CCEDCF921BF135964FA11A3E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = app.mast.editor.tests;
+				SDKROOT = macosx;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Mast.app/Contents/MacOS/Mast";
+			};
+			name = Release;
+		};
+		E891515713EB1B9A91A8FD03 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGNING_REQUIRED = NO;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_APP_SANDBOX = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 6.0;
+			};
+			name = Debug;
+		};
+		FC51289BBD3ED2D983CDC9DE /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_TESTABILITY = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = Mast;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
+				INFOPLIST_KEY_LSMinimumSystemVersion = 15.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = app.mast.editor;
+				PRODUCT_NAME = Mast;
+				SDKROOT = macosx;
+				SWIFT_ENABLE_TESTABILITY = YES;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		0F2C2C8E40E2262A78AC32B5 /* Build configuration list for PBXProject "Mast" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E891515713EB1B9A91A8FD03 /* Debug */,
+				18F38F90524B6CFCA1A03884 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		339B1BCFBE16337ED7000CF6 /* Build configuration list for PBXNativeTarget "MastTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C0E6958EAAE8AE058F3E3E8B /* Debug */,
+				CCEDCF921BF135964FA11A3E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		75C3C38E6B13804D96145DBB /* Build configuration list for PBXNativeTarget "Mast" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				841423CC7AD3A5EEE43A2C23 /* Debug */,
+				FC51289BBD3ED2D983CDC9DE /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = AE100537A8459AAB89BD2215 /* Project object */;
+}
