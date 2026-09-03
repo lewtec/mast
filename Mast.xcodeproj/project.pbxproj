@@ -36,7 +36,7 @@
 		A49944CF2E76262BC8686826 /* ContentPackage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 329797B1212A22003715F815 /* ContentPackage.swift */; };
 		B535BB56BB690F7280A0728B /* PostListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C13274E2F8C443ACC965CAA /* PostListView.swift */; };
 		B5889E80DE5A5EB9F39F505C /* MastConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0606C29B14D424CFBE3D8F92 /* MastConfiguration.swift */; };
-		E55F751BB30BB4266C7F3630 /* PostEditorPaneView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20EA15A1534F7F661FF62D73 /* PostEditorPaneView.swift */; };
+		C43F9601FF89CD3C384DCEC1 /* NativeWorkspaceSplitView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 945042D8FAD963FCD643EB09 /* NativeWorkspaceSplitView.swift */; };
 		EB79D0D2A9BB79E733693EF0 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6C542D23F8B7CC07FE8CF94 /* OnboardingView.swift */; };
 /* End PBXBuildFile section */
 
@@ -55,7 +55,6 @@
 		06E0E102EADDA08A7B483785 /* MarkdownDiscoveryResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkdownDiscoveryResult.swift; sourceTree = "<group>"; };
 		0C13274E2F8C443ACC965CAA /* PostListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostListView.swift; sourceTree = "<group>"; };
 		15AAFCFE3052F7C38D1332D7 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
-		20EA15A1534F7F661FF62D73 /* PostEditorPaneView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostEditorPaneView.swift; sourceTree = "<group>"; };
 		2664C163BDD308E399C18843 /* ServerStatusIndicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerStatusIndicator.swift; sourceTree = "<group>"; };
 		27B01D46588533900C97F462 /* Mast.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Mast.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2AA14BF2514DD756201CD151 /* SetupPackage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupPackage.swift; sourceTree = "<group>"; };
@@ -69,6 +68,7 @@
 		856432989A1A1243796202F6 /* OnboardingDefaults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingDefaults.swift; sourceTree = "<group>"; };
 		8D79FC5A39106117CFAC4F77 /* MastConfigurationParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MastConfigurationParser.swift; sourceTree = "<group>"; };
 		9364A0FD86D8486E6B1B00D2 /* ServerConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerConfiguration.swift; sourceTree = "<group>"; };
+		945042D8FAD963FCD643EB09 /* NativeWorkspaceSplitView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NativeWorkspaceSplitView.swift; sourceTree = "<group>"; };
 		9D701FDC3A64E2679FC5DB89 /* MastApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MastApp.swift; sourceTree = "<group>"; };
 		A2932B8315B4F7560635AA83 /* MarkdownContentDiscovery.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkdownContentDiscovery.swift; sourceTree = "<group>"; };
 		A67E67134771F617DDA5DAFE /* EditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditorView.swift; sourceTree = "<group>"; };
@@ -139,9 +139,9 @@
 			children = (
 				B6F2E363CFAF60F6A88AEE5A /* ConfigurationEditorView.swift */,
 				A67E67134771F617DDA5DAFE /* EditorView.swift */,
+				945042D8FAD963FCD643EB09 /* NativeWorkspaceSplitView.swift */,
 				B407D14021A3E813518F9090 /* NewPostView.swift */,
 				F6C542D23F8B7CC07FE8CF94 /* OnboardingView.swift */,
-				20EA15A1534F7F661FF62D73 /* PostEditorPaneView.swift */,
 				0C13274E2F8C443ACC965CAA /* PostListView.swift */,
 				EC7959DDCC862AD67D86AB47 /* PreviewPaneView.swift */,
 				E1870911D2B049EC9E4614FE /* PreviewPlaceholderView.swift */,
@@ -297,13 +297,13 @@
 				78CA8112904299F22DB3229A /* MastConfigurationError.swift in Sources */,
 				9C0FB2EAFE2C0D859439E61F /* MastConfigurationParser.swift in Sources */,
 				06657A8CA023D8A763396DE4 /* MastConfigurationWriter.swift in Sources */,
+				C43F9601FF89CD3C384DCEC1 /* NativeWorkspaceSplitView.swift in Sources */,
 				138B393AD1ED3FA5DCEE0E83 /* NewPostView.swift in Sources */,
 				A086A6E6ADDC4D75420C9FA4 /* OnboardingDefaults.swift in Sources */,
 				EB79D0D2A9BB79E733693EF0 /* OnboardingView.swift in Sources */,
 				3A25B00B908CEAFAD71FB24C /* PackageBuilder.swift in Sources */,
 				597178B60759509FD2CB2427 /* PortAllocator.swift in Sources */,
 				732EB1DE160312C900B0BCEE /* Post.swift in Sources */,
-				E55F751BB30BB4266C7F3630 /* PostEditorPaneView.swift in Sources */,
 				B535BB56BB690F7280A0728B /* PostListView.swift in Sources */,
 				185D16567E6E4CF8DB6EFF88 /* PreviewPaneView.swift in Sources */,
 				2DD5EA14DBF86ABA656D5288 /* PreviewPlaceholderView.swift in Sources */,

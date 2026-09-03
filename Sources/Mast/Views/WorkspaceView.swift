@@ -6,33 +6,33 @@ struct WorkspaceView: View {
     @State private var isShowingConfiguration = false
     @State private var isShowingProjectSetup = false
     @State private var isShowingNewPost = false
-    @State private var columnVisibility: NavigationSplitViewVisibility = .all
+    @State private var isPostsVisible = true
     @State private var isPreviewVisible = true
 
     var body: some View {
-        NavigationSplitView(columnVisibility: $columnVisibility) {
-            PostListView(
+        NativeWorkspaceSplitView(
+            isSidebarVisible: $isPostsVisible,
+            isInspectorVisible: $isPreviewVisible,
+            sidebar: PostListView(
                 posts: project.posts,
                 selection: $model.selectedPost,
                 configureProject: showProjectSetup,
                 editConfiguration: showConfiguration
-            )
-                .navigationSplitViewColumnWidth(min: 220, ideal: 260)
-        } detail: {
-            PostEditorPaneView(
-                selection: model.selectedPost,
+            ),
+            content: EditorView(
                 text: $model.editorText,
-                save: model.scheduleSave,
-                previewVisible: isPreviewVisible,
-                previewURL: model.previewURL,
-                previewAddress: model.previewAddress,
-                serverStatus: model.serverStatus,
-                serverMessage: model.serverMessage,
-                serverCommand: model.serverCommand,
-                serverOutput: model.serverOutput
+                post: model.selectedPost,
+                save: model.scheduleSave
+            ),
+            inspector: PreviewPaneView(
+                url: model.previewURL,
+                address: model.previewAddress,
+                status: model.serverStatus,
+                message: model.serverMessage,
+                command: model.serverCommand,
+                output: model.serverOutput
             )
-        }
-        .navigationSplitViewStyle(.balanced)
+        )
         .navigationTitle("Mast")
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .onChange(of: model.selectedPost) { _, post in
@@ -41,6 +41,9 @@ struct WorkspaceView: View {
         .toolbar {
             ToolbarItem(placement: .navigation) {
                 HStack(spacing: 12) {
+                    Button("Toggle posts sidebar", systemImage: "sidebar.left") {
+                        isPostsVisible.toggle()
+                    }
                     ServerStatusIndicator(status: model.serverStatus, message: model.serverMessage)
                     Button("New post", systemImage: "plus", action: showNewPost)
                         .labelStyle(.iconOnly)
@@ -61,9 +64,7 @@ struct WorkspaceView: View {
                     isPreviewVisible ? "Hide preview" : "Show preview",
                     systemImage: "sidebar.right"
                 ) {
-                    withAnimation(.easeInOut(duration: 0.24)) {
-                        isPreviewVisible.toggle()
-                    }
+                    isPreviewVisible.toggle()
                 }
             }
         }
