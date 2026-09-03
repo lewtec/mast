@@ -107,6 +107,11 @@ private final class ImageMarkdownTextView: NSTextView {
         super.paste(sender)
     }
 
+    override func readSelection(from pasteboard: NSPasteboard, type: NSPasteboard.PasteboardType) -> Bool {
+        guard imageImportHandler?(pasteboard, self) != true else { return true }
+        return super.readSelection(from: pasteboard, type: type)
+    }
+
     override func draggingEntered(_ sender: NSDraggingInfo) -> NSDragOperation {
         if ImageAssetImporter.canImport(from: sender.draggingPasteboard) {
             return .copy

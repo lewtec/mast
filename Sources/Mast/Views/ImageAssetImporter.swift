@@ -42,15 +42,23 @@ enum ImageAssetImporter {
     }
 
     private static func imageAsset(from pasteboard: NSPasteboard) -> ImageAsset? {
-        if let url = pasteboard.readObjects(
-            forClasses: [NSURL.self],
-            options: [.urlReadingFileURLsOnly: true]
-        )?.first as? URL,
+        if let url = fileURL(from: pasteboard),
            let image = NSImage(contentsOf: url),
            let data = try? Data(contentsOf: url)
         {
             _ = image
             return ImageAsset(data: data, filename: imageFilename(from: url.lastPathComponent))
+        }
+
+        if let pngData = pasteboard.data(forType: .png) {
+            return ImageAsset(data: pngData, filename: generatedFilename())
+        }
+
+        if let tiffData = pasteboard.data(forType: .tiff),
+           let representation = NSBitmapImageRep(data: tiffData),
+           let pngData = representation.representation(using: .png, properties: [:])
+        {
+            return ImageAsset(data: pngData, filename: generatedFilename())
         }
 
         guard let image = NSImage(pasteboard: pasteboard),
@@ -62,6 +70,18 @@ enum ImageAssetImporter {
         }
 
         return ImageAsset(data: pngData, filename: generatedFilename())
+    }
+
+    private static func fileURL(from pasteboard: NSPasteboard) -> URL? {
+        if let url = pasteboard.readObjects(
+            forClasses: [NSURL.self],
+            options: [.urlReadingFileURLsOnly: true]
+        )?.first as? URL {
+            return url
+        }
+
+        guard let value = pasteboard.string(forType: .fileURL) else { return nil }
+        return URL(string: value)
     }
 
     private static func destination(for filename: String, beside postURL: URL) -> URL? {
