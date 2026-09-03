@@ -1,6 +1,6 @@
 # Mast
 
-![Mast app icon](assets/mast-app-icon-v4.png)
+![Mast app icon](assets/logo.png)
 
 Mast is a native macOS Markdown editor for blogs that build a site from local content files. It keeps the editor beside a live preview of the running site.
 
