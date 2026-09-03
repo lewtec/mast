@@ -35,7 +35,9 @@ struct MarkdownTextEditor: NSViewRepresentable {
         let scrollView = NSScrollView()
         scrollView.borderType = .noBorder
         scrollView.hasVerticalScroller = true
+        scrollView.hasHorizontalScroller = false
         scrollView.autohidesScrollers = true
+        scrollView.contentInsets = NSEdgeInsets(top: 0, left: 0, bottom: 12, right: 0)
         scrollView.drawsBackground = false
         scrollView.documentView = textView
 
