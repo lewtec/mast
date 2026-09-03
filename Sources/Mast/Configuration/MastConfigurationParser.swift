@@ -5,6 +5,7 @@ enum MastConfigurationParser {
         var preset: String?
         var command: String?
         var url: String?
+        var autosaveDelayMilliseconds = 1_000
         var packageOrder: [String] = []
         var packages: [String: PackageBuilder] = [:]
         var section = Section.none
@@ -40,6 +41,12 @@ enum MastConfigurationParser {
                 try assignServerValue(key: String(key), value: String(value), preset: &preset, command: &command, url: &url, lineNumber: lineNumber)
             case .serverOptions:
                 continue
+            case .editor:
+                autosaveDelayMilliseconds = try assignEditorValue(
+                    key: String(key),
+                    value: String(value),
+                    lineNumber: lineNumber
+                )
             case .package(let name):
                 try assignPackageValue(key: String(key), value: String(value), package: name, packages: &packages, lineNumber: lineNumber)
             case .none:
@@ -64,8 +71,16 @@ enum MastConfigurationParser {
 
         return MastConfiguration(
             server: ServerConfiguration(preset: preset, command: command, url: url),
-            packages: contentPackages
+            packages: contentPackages,
+            autosaveDelayMilliseconds: autosaveDelayMilliseconds
         )
+    }
+
+    private static func assignEditorValue(key: String, value: String, lineNumber: Int) throws -> Int {
+        guard key == "autosave_delay_ms", let milliseconds = Int(value), milliseconds >= 0 else {
+            throw MastConfigurationError.malformedLine(lineNumber)
+        }
+        return milliseconds
     }
 
     private static func assignServerValue(
@@ -126,6 +141,7 @@ private enum Section {
     case none
     case server
     case serverOptions
+    case editor
     case package(String)
 
     static func parse(_ name: String, lineNumber: Int) throws -> Section {
@@ -135,6 +151,10 @@ private enum Section {
 
         if name.hasPrefix("server.options.") {
             return .serverOptions
+        }
+
+        if name == "editor" {
+            return .editor
         }
 
         let prefix = "content.packages."

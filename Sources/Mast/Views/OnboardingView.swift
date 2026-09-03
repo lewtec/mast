@@ -8,6 +8,7 @@ struct OnboardingView: View {
     @State private var preset: String
     @State private var command: String
     @State private var url: String
+    @State private var autosaveDelayMilliseconds: Int
     @State private var packages: [SetupPackage]
     @State private var errorMessage: String?
     private let hasRootMarkdown: Bool
@@ -28,6 +29,7 @@ struct OnboardingView: View {
         _preset = State(initialValue: defaults.preset)
         _command = State(initialValue: defaults.command)
         _url = State(initialValue: defaults.url)
+        _autosaveDelayMilliseconds = State(initialValue: configuration?.autosaveDelayMilliseconds ?? 1_000)
         let discovery = MarkdownContentDiscovery.discover(at: rootURL)
         _packages = State(initialValue: configuration.map { configuration in
             configuration.packages.map { package in
@@ -53,6 +55,12 @@ struct OnboardingView: View {
                 }
                 TextField("Command", text: $command)
                 TextField("Preview URL", text: $url)
+            }
+
+            Section("Editor") {
+                Stepper(value: $autosaveDelayMilliseconds, in: 250...10_000, step: 250) {
+                    LabeledContent("Autosave delay", value: "\(autosaveDelayMilliseconds) ms")
+                }
             }
 
             Section("Content") {
@@ -117,6 +125,7 @@ struct OnboardingView: View {
                 preset: preset,
                 command: command,
                 url: url,
+                autosaveDelayMilliseconds: autosaveDelayMilliseconds,
                 packages: packages,
                 serverOptionsSource: serverOptionsSource
             )

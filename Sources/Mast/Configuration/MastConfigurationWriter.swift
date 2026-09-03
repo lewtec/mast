@@ -6,6 +6,7 @@ enum MastConfigurationWriter {
         preset: String,
         command: String,
         url: String,
+        autosaveDelayMilliseconds: Int,
         packages: [SetupPackage],
         serverOptionsSource: String = ""
     ) throws {
@@ -14,6 +15,9 @@ enum MastConfigurationWriter {
         preset = "\(preset)"
         command = "\(command)"
         url = "\(url)"
+
+        [editor]
+        autosave_delay_ms = \(autosaveDelayMilliseconds)
         """]
         if !serverOptionsSource.isEmpty {
             sections.append(serverOptionsSource)

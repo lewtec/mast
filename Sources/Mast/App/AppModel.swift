@@ -20,8 +20,6 @@ enum ServerStatus: Equatable {
 @MainActor
 @Observable
 final class AppModel {
-    private static let autosaveDelay = Duration.seconds(1)
-
     private(set) var project: Project?
     var selectedPost: Post?
     var editorText = ""
@@ -72,9 +70,10 @@ final class AppModel {
     func scheduleSave() {
         guard let post = selectedPost else { return }
         let text = editorText
+        let delay = project?.configuration.autosaveDelayMilliseconds ?? 1_000
         saveTask?.cancel()
         saveTask = Task { [weak self] in
-            try? await Task.sleep(for: Self.autosaveDelay)
+            try? await Task.sleep(for: .milliseconds(delay))
             guard !Task.isCancelled else { return }
             self?.save(text, to: post)
         }
@@ -83,25 +82,6 @@ final class AppModel {
     func save() {
         guard let post = selectedPost else { return }
         save(editorText, to: post)
-    }
-
-    func saveConfiguration() -> Bool {
-        guard let project else { return false }
-
-        do {
-            _ = try MastConfigurationParser.parse(configurationSource)
-            try configurationSource.write(
-                to: project.rootURL.appending(path: "mast.toml"),
-                atomically: true,
-                encoding: .utf8
-            )
-            openProject(at: project.rootURL)
-            return true
-        } catch {
-            errorMessage = "Mast could not save mast.toml: \(error.localizedDescription)"
-            isShowingError = true
-            return false
-        }
     }
 
     func createPost(in package: ContentPackage, slug: String, language: String?) -> Bool {

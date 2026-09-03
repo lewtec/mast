@@ -38,6 +38,7 @@ struct MastConfigurationParserTests {
         """)
 
         #expect(configuration.server.preset == "hugo")
+        #expect(configuration.autosaveDelayMilliseconds == 1_000)
         #expect(configuration.packages.map(\.name) == ["blog", "docs"])
         #expect(configuration.packages[1].languages == ["pt", "en"])
     }
@@ -68,6 +69,7 @@ struct MastConfigurationParserTests {
             preset: "hugo",
             command: "hugo server --port {port}",
             url: "http://127.0.0.1:{port}",
+            autosaveDelayMilliseconds: 1_500,
             packages: [SetupPackage(name: "blog", path: "content", route: "/{path}", languages: ["pt", "en"])]
         )
 
@@ -76,6 +78,7 @@ struct MastConfigurationParserTests {
 
         #expect(configuration.packages.first?.path == "content")
         #expect(configuration.packages.first?.languages == ["pt", "en"])
+        #expect(configuration.autosaveDelayMilliseconds == 1_500)
     }
 
     @Test
@@ -96,6 +99,7 @@ struct MastConfigurationParserTests {
             preset: "hugo",
             command: "hugo server --port {port}",
             url: "http://127.0.0.1:{port}",
+            autosaveDelayMilliseconds: 1_000,
             packages: [SetupPackage(name: "blog", path: "content", route: "/{path}")],
             serverOptionsSource: MastConfigurationWriter.serverOptionsSource(from: existingSource)
         )
@@ -175,8 +179,7 @@ struct MastConfigurationParserTests {
             posts: [english, portuguese],
             selection: .constant(english),
             showLanguagesSeparately: .constant(false),
-            configureProject: {},
-            editConfiguration: {}
+            configureProject: {}
         )
 
         #expect(view.displayPosts == [english])

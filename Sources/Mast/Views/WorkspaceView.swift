@@ -3,7 +3,6 @@ import SwiftUI
 struct WorkspaceView: View {
     @Bindable var model: AppModel
     let project: Project
-    @State private var isShowingConfiguration = false
     @State private var isShowingProjectSetup = false
     @State private var isShowingNewPost = false
     @State private var isPostsVisible = true
@@ -18,8 +17,7 @@ struct WorkspaceView: View {
                 posts: project.posts,
                 selection: $model.selectedPost,
                 showLanguagesSeparately: $showLanguagesSeparately,
-                configureProject: showProjectSetup,
-                editConfiguration: showConfiguration
+                configureProject: showProjectSetup
             ),
             content: EditorView(
                 text: $model.editorText,
@@ -94,9 +92,6 @@ struct WorkspaceView: View {
                 )
             }
         }
-        .sheet(isPresented: $isShowingConfiguration) {
-            ConfigurationEditorView(source: $model.configurationSource, save: model.saveConfiguration)
-        }
         .sheet(isPresented: $isShowingNewPost) {
             NewPostView(packages: project.configuration.packages, create: model.createPost)
         }
@@ -104,10 +99,6 @@ struct WorkspaceView: View {
 
     private func showNewPost() {
         isShowingNewPost = true
-    }
-
-    private func showConfiguration() {
-        isShowingConfiguration = true
     }
 
     private func showProjectSetup() {

@@ -38,6 +38,9 @@ preset = "hugo"
 command = "hugo server --port {port}"
 url = "http://127.0.0.1:{port}"
 
+[editor]
+autosave_delay_ms = 1000
+
 [server.options.hugo]
 drafts = true
 future = false
@@ -65,6 +68,14 @@ The `[server]` table defines the local development server.
 Before the app starts the command, it selects an available local port and replaces every `{port}` placeholder. This avoids depending on server log output and avoids port conflicts.
 
 The command runs from the project root. Mast keeps the editor available if the server fails. The command palette provides **Start server** and **Restart server**. Mast stops the server when you close or change the project.
+
+### Editor settings
+
+The optional `[editor]` table controls local editing behavior.
+
+| Key | Type | Required | Description |
+| --- | --- | --- | --- |
+| `autosave_delay_ms` | integer | No | Delay after the last edit before saving. Defaults to `1000`. |
 
 ### Presets
 

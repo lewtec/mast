@@ -5,7 +5,6 @@ struct PostListView: View {
     @Binding var selection: Post?
     @Binding var showLanguagesSeparately: Bool
     let configureProject: () -> Void
-    let editConfiguration: () -> Void
 
     var body: some View {
         VStack(spacing: 0) {
@@ -15,11 +14,10 @@ struct PostListView: View {
                 Spacer()
                 Text(displayPosts.count, format: .number)
                     .foregroundStyle(.secondary)
+                Button("Configure project", systemImage: "slider.horizontal.3", action: configureProject)
+                    .labelStyle(.iconOnly)
                 Menu {
                     Toggle("Always show languages", isOn: $showLanguagesSeparately)
-                    Divider()
-                    Button("Configure project", systemImage: "slider.horizontal.3", action: configureProject)
-                    Button("Edit mast.toml", systemImage: "doc.text", action: editConfiguration)
                 } label: {
                     Label("Project options", systemImage: "ellipsis")
                 }
