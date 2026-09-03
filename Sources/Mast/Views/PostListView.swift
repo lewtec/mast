@@ -3,9 +3,6 @@ import SwiftUI
 struct PostListView: View {
     let posts: [Post]
     @Binding var selection: Post?
-    let serverStatus: ServerStatus
-    let serverMessage: String
-    let createPost: () -> Void
     let configureProject: () -> Void
     let editConfiguration: () -> Void
 
@@ -14,12 +11,9 @@ struct PostListView: View {
             HStack {
                 Text("Posts")
                     .font(.headline)
-                ServerStatusIndicator(status: serverStatus, message: serverMessage)
                 Spacer()
                 Text(posts.count, format: .number)
                     .foregroundStyle(.secondary)
-                Button("New post", systemImage: "plus", action: createPost)
-                    .labelStyle(.iconOnly)
                 Menu {
                     Button("Configure project", systemImage: "slider.horizontal.3", action: configureProject)
                     Button("Edit mast.toml", systemImage: "doc.text", action: editConfiguration)

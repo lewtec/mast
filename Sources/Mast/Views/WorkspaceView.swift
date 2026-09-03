@@ -7,36 +7,44 @@ struct WorkspaceView: View {
     @State private var isShowingProjectSetup = false
     @State private var isShowingNewPost = false
     @State private var columnVisibility: NavigationSplitViewVisibility = .all
+    @State private var isPreviewVisible = true
 
     var body: some View {
         NavigationSplitView(columnVisibility: $columnVisibility) {
             PostListView(
                 posts: project.posts,
                 selection: $model.selectedPost,
-                serverStatus: model.serverStatus,
-                serverMessage: model.serverMessage,
-                createPost: showNewPost,
                 configureProject: showProjectSetup,
                 editConfiguration: showConfiguration
             )
                 .navigationSplitViewColumnWidth(min: 220, ideal: 260)
-        } content: {
-            EditorView(text: $model.editorText, post: model.selectedPost, save: model.scheduleSave)
-                .frame(minWidth: 360, maxWidth: .infinity, maxHeight: .infinity)
         } detail: {
-            Group {
-                if let previewURL = model.previewURL {
-                    PreviewWebView(url: previewURL)
-                } else {
-                    PreviewPlaceholderView(urlTemplate: project.configuration.server.url)
-                }
-            }
-            .frame(minWidth: 300, idealWidth: 400, maxWidth: .infinity, maxHeight: .infinity)
+            PostEditorPaneView(
+                posts: project.posts,
+                selection: $model.selectedPost,
+                text: $model.editorText,
+                save: model.scheduleSave,
+                previewVisible: $isPreviewVisible,
+                previewURL: model.previewURL,
+                previewAddress: model.previewAddress,
+                serverStatus: model.serverStatus,
+                serverMessage: model.serverMessage
+            )
         }
         .navigationSplitViewStyle(.balanced)
+        .navigationTitle("Mast")
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .onChange(of: model.selectedPost) { _, post in
             model.selectPost(post)
+        }
+        .toolbar {
+            ToolbarItem(placement: .navigation) {
+                HStack(spacing: 12) {
+                    ServerStatusIndicator(status: model.serverStatus, message: model.serverMessage)
+                    Button("New post", systemImage: "plus", action: showNewPost)
+                        .labelStyle(.iconOnly)
+                }
+            }
         }
         .sheet(isPresented: $isShowingProjectSetup) {
             NavigationStack {

@@ -26,6 +26,7 @@ final class AppModel {
     var errorMessage: String?
     var isShowingError = false
     var previewURL: URL?
+    var previewAddress: String?
     var serverStatus: ServerStatus = .stopped
     var serverMessage = "Server has not started."
     var configurationSource = ""
@@ -141,6 +142,7 @@ final class AppModel {
         previousProcess?.terminate()
         previewTask?.cancel()
         previewURL = nil
+        previewAddress = nil
         serverStatus = .starting
         serverMessage = "Starting \(project.configuration.server.command)"
         guard let port = PortAllocator.availablePort() else {
@@ -149,6 +151,8 @@ final class AppModel {
             return
         }
         let command = project.configuration.server.command.replacing("{port}", with: String(port))
+        let address = project.configuration.server.url.replacing("{port}", with: String(port))
+        previewAddress = address
         let process = Process()
         process.executableURL = URL(filePath: "/bin/zsh")
         process.arguments = ["-lc", command]
@@ -165,13 +169,24 @@ final class AppModel {
         do {
             try process.run()
             serverProcess = process
-            let url = URL(string: project.configuration.server.url.replacing("{port}", with: String(port)))
+            let url = URL(string: address)
             previewTask = Task { [weak self, weak process] in
                 try? await Task.sleep(for: .seconds(1))
                 guard let self, let process, !Task.isCancelled, self.serverProcess === process else { return }
                 guard process.isRunning else {
                     self.serverStatus = .failed
                     self.serverMessage = "Development server exited before it became ready."
+                    return
+                }
+                guard let url else {
+                    self.serverStatus = .failed
+                    self.serverMessage = "Preview URL is not valid: \(address)"
+                    return
+                }
+                if let failure = await Self.connectionFailure(for: url) {
+                    guard !Task.isCancelled, self.serverProcess === process else { return }
+                    self.serverStatus = .failed
+                    self.serverMessage = failure
                     return
                 }
                 self.serverStatus = .running
@@ -206,6 +221,18 @@ final class AppModel {
             editorText = ""
             errorMessage = "Mast could not read \(post.fileURL.lastPathComponent): \(error.localizedDescription)"
             isShowingError = true
+        }
+    }
+
+    private nonisolated static func connectionFailure(for url: URL) async -> String? {
+        var request = URLRequest(url: url)
+        request.timeoutInterval = 2
+
+        do {
+            _ = try await URLSession.shared.data(for: request)
+            return nil
+        } catch {
+            return "Mast could not reach \(url.absoluteString): \(error.localizedDescription)"
         }
     }
 }
