@@ -29,6 +29,8 @@ final class AppModel {
     var previewAddress: String?
     var serverStatus: ServerStatus = .stopped
     var serverMessage = "Server has not started."
+    var serverCommand: String?
+    var serverOutput = ""
     var configurationSource = ""
     var setupRootURL: URL?
     var isShowingSetup = false
@@ -143,8 +145,10 @@ final class AppModel {
         previewTask?.cancel()
         previewURL = nil
         previewAddress = nil
+        serverCommand = nil
+        serverOutput = ""
         serverStatus = .starting
-        serverMessage = "Starting \(project.configuration.server.command)"
+        serverMessage = "Starting development server…"
         guard let port = PortAllocator.availablePort() else {
             serverStatus = .failed
             serverMessage = "Mast could not reserve a port for the development server."
@@ -153,10 +157,26 @@ final class AppModel {
         let command = project.configuration.server.command.replacing("{port}", with: String(port))
         let address = project.configuration.server.url.replacing("{port}", with: String(port))
         previewAddress = address
+        serverCommand = command
         let process = Process()
+        let outputPipe = Pipe()
         process.executableURL = URL(filePath: "/bin/zsh")
         process.arguments = ["-lc", command]
         process.currentDirectoryURL = project.rootURL
+        process.standardOutput = outputPipe
+        process.standardError = outputPipe
+        outputPipe.fileHandleForReading.readabilityHandler = { [weak self, weak process] handle in
+            let data = handle.availableData
+            guard !data.isEmpty else {
+                handle.readabilityHandler = nil
+                return
+            }
+            guard let output = String(data: data, encoding: .utf8) else { return }
+            Task { @MainActor [weak self, weak process] in
+                guard let self, let process, self.serverProcess === process else { return }
+                self.appendServerOutput(output)
+            }
+        }
         process.terminationHandler = { [weak self] endedProcess in
             Task { @MainActor [weak self] in
                 guard let self, self.serverProcess === endedProcess else { return }
@@ -171,27 +191,32 @@ final class AppModel {
             serverProcess = process
             let url = URL(string: address)
             previewTask = Task { [weak self, weak process] in
-                try? await Task.sleep(for: .seconds(1))
-                guard let self, let process, !Task.isCancelled, self.serverProcess === process else { return }
-                guard process.isRunning else {
-                    self.serverStatus = .failed
-                    self.serverMessage = "Development server exited before it became ready."
-                    return
-                }
                 guard let url else {
+                    guard let self else { return }
                     self.serverStatus = .failed
                     self.serverMessage = "Preview URL is not valid: \(address)"
                     return
                 }
-                if let failure = await Self.connectionFailure(for: url) {
-                    guard !Task.isCancelled, self.serverProcess === process else { return }
-                    self.serverStatus = .failed
-                    self.serverMessage = failure
-                    return
+                guard let self else { return }
+                for _ in 0..<20 {
+                    guard let process, !Task.isCancelled, self.serverProcess === process else { return }
+                    guard process.isRunning else {
+                        self.serverStatus = .failed
+                        self.serverMessage = "Development server exited before it became ready."
+                        return
+                    }
+                    if await Self.connectionFailure(for: url) == nil {
+                        guard !Task.isCancelled, self.serverProcess === process else { return }
+                        self.serverStatus = .running
+                        self.serverMessage = "Development server is running on port \(port)."
+                        self.previewURL = url
+                        return
+                    }
+                    try? await Task.sleep(for: .milliseconds(500))
                 }
-                self.serverStatus = .running
-                self.serverMessage = "Development server is running on port \(port)."
-                self.previewURL = url
+                guard let process, !Task.isCancelled, self.serverProcess === process else { return }
+                self.serverStatus = .failed
+                self.serverMessage = "Mast could not reach \(url.absoluteString) after 10 seconds."
             }
         } catch {
             serverStatus = .failed
@@ -199,6 +224,10 @@ final class AppModel {
             errorMessage = "Mast could not start the development server: \(error.localizedDescription)"
             isShowingError = true
         }
+    }
+
+    private func appendServerOutput(_ output: String) {
+        serverOutput = String((serverOutput + output).suffix(6_000))
     }
 
     func finishSetup(at rootURL: URL) {

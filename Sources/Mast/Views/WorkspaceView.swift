@@ -28,7 +28,9 @@ struct WorkspaceView: View {
                 previewURL: model.previewURL,
                 previewAddress: model.previewAddress,
                 serverStatus: model.serverStatus,
-                serverMessage: model.serverMessage
+                serverMessage: model.serverMessage,
+                serverCommand: model.serverCommand,
+                serverOutput: model.serverOutput
             )
         }
         .navigationSplitViewStyle(.balanced)

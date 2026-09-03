@@ -5,6 +5,8 @@ struct PreviewPaneView: View {
     let address: String?
     let status: ServerStatus
     let message: String
+    let command: String?
+    let output: String
 
     var body: some View {
         VStack(spacing: 0) {
@@ -24,14 +26,39 @@ struct PreviewPaneView: View {
             if let url {
                 PreviewWebView(url: url)
             } else {
-                ContentUnavailableView(
-                    status == .failed ? "Preview unavailable" : "Preparing preview",
-                    systemImage: status == .failed ? "exclamationmark.triangle" : "safari",
-                    description: Text(message)
-                )
+                VStack(spacing: 12) {
+                    ContentUnavailableView(
+                        status == .failed ? "Preview unavailable" : "Preparing preview",
+                        systemImage: status == .failed ? "exclamationmark.triangle" : "safari",
+                        description: Text(message)
+                    )
+
+                    if let command {
+                        serverDetail("Command", value: command)
+                    }
+
+                    if !output.isEmpty {
+                        serverDetail("Server output", value: output)
+                    }
+                }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+
+    private func serverDetail(_ title: String, value: String) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text(title)
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(.secondary)
+            Text(value)
+                .font(.caption.monospaced())
+                .textSelection(.enabled)
+                .lineLimit(6)
+        }
+        .padding(10)
+        .frame(maxWidth: 460, alignment: .leading)
+        .background(.quaternary, in: RoundedRectangle(cornerRadius: 8))
     }
 }

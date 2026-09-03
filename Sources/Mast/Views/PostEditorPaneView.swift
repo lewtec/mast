@@ -10,6 +10,8 @@ struct PostEditorPaneView: View {
     let previewAddress: String?
     let serverStatus: ServerStatus
     let serverMessage: String
+    let serverCommand: String?
+    let serverOutput: String
 
     var body: some View {
         VStack(spacing: 0) {
@@ -48,7 +50,9 @@ struct PostEditorPaneView: View {
                         url: previewURL,
                         address: previewAddress,
                         status: serverStatus,
-                        message: serverMessage
+                        message: serverMessage,
+                        command: serverCommand,
+                        output: serverOutput
                     )
                     .frame(minWidth: 320, idealWidth: 420, maxWidth: .infinity, maxHeight: .infinity)
                 }
