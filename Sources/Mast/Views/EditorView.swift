@@ -10,10 +10,8 @@ struct EditorView: View {
             if let post {
                 HStack(spacing: 0) {
                     Spacer(minLength: 0)
-                    TextEditor(text: $text)
-                        .font(.system(.body, design: .monospaced))
+                    MarkdownTextEditor(text: $text, onTextChange: save)
                         .accessibilityLabel("Markdown editor for \(post.title)")
-                        .onChange(of: text) { _, _ in save() }
                         .frame(maxWidth: 860, maxHeight: .infinity)
                     Spacer(minLength: 0)
                 }

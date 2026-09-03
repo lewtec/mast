@@ -1,8 +1,20 @@
-import Testing
 import Foundation
+import Testing
+import AppKit
 @testable import Mast
 
 struct MastConfigurationParserTests {
+    @MainActor
+    @Test
+    func markdownHighlightingPreservesLiteralDashes() {
+        let source = "---\ntitle: Test\n---\n\n# Heading\n\n----"
+        let storage = NSTextStorage(string: source)
+
+        MarkdownHighlighter.apply(to: storage)
+
+        #expect(storage.string == source)
+    }
+
     @Test
     func parsesServerAndContentPackages() throws {
         let configuration = try MastConfigurationParser.parse("""

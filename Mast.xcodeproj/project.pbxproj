@@ -25,6 +25,7 @@
 		69A3C4B7379E8BBA9AA3E2C8 /* EditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A67E67134771F617DDA5DAFE /* EditorView.swift */; };
 		6DEB8F6F36CBC14361449AA4 /* MastConfigurationParserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 62180A10C7951D3E87C84EAC /* MastConfigurationParserTests.swift */; };
 		732EB1DE160312C900B0BCEE /* Post.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9A2CBEC9005AED22BC56B8F /* Post.swift */; };
+		77EBC1414DC090DA0B060A70 /* MarkdownTextEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49BCC9F2C527C2B186306C80 /* MarkdownTextEditor.swift */; };
 		78CA8112904299F22DB3229A /* MastConfigurationError.swift in Sources */ = {isa = PBXBuildFile; fileRef = F61DDF8E6838FDC791F97187 /* MastConfigurationError.swift */; };
 		81A01958B8823B80476566D3 /* ProjectLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 371ABE72E51E386722D880C6 /* ProjectLoader.swift */; };
 		881D94AEE6DDCD1E0750564C /* AppModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 440CC428DF9C60BDACE703B0 /* AppModel.swift */; };
@@ -62,6 +63,7 @@
 		371ABE72E51E386722D880C6 /* ProjectLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectLoader.swift; sourceTree = "<group>"; };
 		3D67944C40BA7009B6B79223 /* Project.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Project.swift; sourceTree = "<group>"; };
 		440CC428DF9C60BDACE703B0 /* AppModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppModel.swift; sourceTree = "<group>"; };
+		49BCC9F2C527C2B186306C80 /* MarkdownTextEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkdownTextEditor.swift; sourceTree = "<group>"; };
 		62180A10C7951D3E87C84EAC /* MastConfigurationParserTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MastConfigurationParserTests.swift; sourceTree = "<group>"; };
 		746CDB34DE14CED42953832E /* WorkspaceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceView.swift; sourceTree = "<group>"; };
 		7C0D2A554C67A58286005BA8 /* PortAllocator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PortAllocator.swift; sourceTree = "<group>"; };
@@ -139,6 +141,7 @@
 			children = (
 				B6F2E363CFAF60F6A88AEE5A /* ConfigurationEditorView.swift */,
 				A67E67134771F617DDA5DAFE /* EditorView.swift */,
+				49BCC9F2C527C2B186306C80 /* MarkdownTextEditor.swift */,
 				945042D8FAD963FCD643EB09 /* NativeWorkspaceSplitView.swift */,
 				B407D14021A3E813518F9090 /* NewPostView.swift */,
 				F6C542D23F8B7CC07FE8CF94 /* OnboardingView.swift */,
@@ -292,6 +295,7 @@
 				69A3C4B7379E8BBA9AA3E2C8 /* EditorView.swift in Sources */,
 				14E92B500934229A0B8C4F78 /* MarkdownContentDiscovery.swift in Sources */,
 				15D25F308A4D9EFA30A71F1F /* MarkdownDiscoveryResult.swift in Sources */,
+				77EBC1414DC090DA0B060A70 /* MarkdownTextEditor.swift in Sources */,
 				553B106ACF26E777D2D0DEA8 /* MastApp.swift in Sources */,
 				B5889E80DE5A5EB9F39F505C /* MastConfiguration.swift in Sources */,
 				78CA8112904299F22DB3229A /* MastConfigurationError.swift in Sources */,
