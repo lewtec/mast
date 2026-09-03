@@ -8,10 +8,15 @@ struct EditorView: View {
     var body: some View {
         Group {
             if let post {
-                TextEditor(text: $text)
-                    .font(.system(.body, design: .monospaced))
-                    .accessibilityLabel("Markdown editor for \(post.title)")
-                    .onChange(of: text) { _, _ in save() }
+                HStack(spacing: 0) {
+                    Spacer(minLength: 0)
+                    TextEditor(text: $text)
+                        .font(.system(.body, design: .monospaced))
+                        .accessibilityLabel("Markdown editor for \(post.title)")
+                        .onChange(of: text) { _, _ in save() }
+                        .frame(maxWidth: 860, maxHeight: .infinity)
+                    Spacer(minLength: 0)
+                }
             } else {
                 ContentUnavailableView(
                     "Select a post",
