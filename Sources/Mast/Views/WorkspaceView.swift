@@ -6,15 +6,16 @@ struct WorkspaceView: View {
     @State private var isShowingConfiguration = false
     @State private var isShowingProjectSetup = false
     @State private var isShowingNewPost = false
+    @State private var columnVisibility: NavigationSplitViewVisibility = .all
 
     var body: some View {
-        HSplitView {
+        NavigationSplitView(columnVisibility: $columnVisibility) {
             PostListView(posts: project.posts, selection: $model.selectedPost)
-                .frame(minWidth: 220, idealWidth: 260)
-
+                .navigationSplitViewColumnWidth(min: 220, ideal: 260)
+        } content: {
             EditorView(text: $model.editorText, post: model.selectedPost, save: model.scheduleSave)
-                .frame(minWidth: 360)
-
+                .frame(minWidth: 360, maxWidth: .infinity, maxHeight: .infinity)
+        } detail: {
             Group {
                 if let previewURL = model.previewURL {
                     PreviewWebView(url: previewURL)
@@ -22,14 +23,16 @@ struct WorkspaceView: View {
                     PreviewPlaceholderView(urlTemplate: project.configuration.server.url)
                 }
             }
-                .frame(minWidth: 300, idealWidth: 400)
+            .frame(minWidth: 300, idealWidth: 400, maxWidth: .infinity, maxHeight: .infinity)
         }
+        .navigationSplitViewStyle(.balanced)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .onChange(of: model.selectedPost) { _, post in
             model.selectPost(post)
         }
         .toolbar {
             ToolbarItemGroup {
+                Button("Toggle sidebar", systemImage: "sidebar.leading", action: toggleSidebar)
                 Button("New post", systemImage: "plus", action: showNewPost)
                 Button("Configure project", systemImage: "slider.horizontal.3", action: showProjectSetup)
                 Button("Edit mast.toml", systemImage: "doc.text", action: showConfiguration)
@@ -63,5 +66,9 @@ struct WorkspaceView: View {
 
     private func showProjectSetup() {
         isShowingProjectSetup = true
+    }
+
+    private func toggleSidebar() {
+        columnVisibility = columnVisibility == .all ? .doubleColumn : .all
     }
 }

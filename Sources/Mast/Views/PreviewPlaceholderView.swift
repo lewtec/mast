@@ -10,5 +10,6 @@ struct PreviewPlaceholderView: View {
             Text("Mast will load \(urlTemplate) after it starts the development server.")
         }
         .padding()
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 }
