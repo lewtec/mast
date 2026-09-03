@@ -28,11 +28,13 @@ struct PostEditorPaneView: View {
                         output: serverOutput
                     )
                     .frame(minWidth: 320, idealWidth: 420, maxWidth: .infinity, maxHeight: .infinity)
+                    .transition(.move(edge: .trailing))
                 }
             } else {
                 EditorView(text: $text, post: selection, save: save)
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .animation(.easeInOut(duration: 0.24), value: previewVisible)
     }
 }

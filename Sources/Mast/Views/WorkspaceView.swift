@@ -61,7 +61,9 @@ struct WorkspaceView: View {
                     isPreviewVisible ? "Hide preview" : "Show preview",
                     systemImage: "sidebar.right"
                 ) {
-                    isPreviewVisible.toggle()
+                    withAnimation(.easeInOut(duration: 0.24)) {
+                        isPreviewVisible.toggle()
+                    }
                 }
             }
         }
