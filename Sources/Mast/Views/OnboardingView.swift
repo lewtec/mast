@@ -10,6 +10,7 @@ struct OnboardingView: View {
     @State private var url: String
     @State private var packages: [SetupPackage]
     @State private var errorMessage: String?
+    private let hasRootMarkdown: Bool
 
     init(rootURL: URL, complete: @escaping (URL) -> Void) {
         let defaults = OnboardingDefaults.detect(at: rootURL)
@@ -18,8 +19,9 @@ struct OnboardingView: View {
         _preset = State(initialValue: defaults.preset)
         _command = State(initialValue: defaults.command)
         _url = State(initialValue: defaults.url)
-        let discoveredPackages = MarkdownContentDiscovery.suggestedPackages(at: rootURL)
-        _packages = State(initialValue: discoveredPackages.isEmpty ? [SetupPackage(name: "blog", path: "content", route: "/{path}")] : discoveredPackages)
+        let discovery = MarkdownContentDiscovery.discover(at: rootURL)
+        _packages = State(initialValue: discovery.packages)
+        hasRootMarkdown = discovery.hasRootMarkdown
     }
 
     var body: some View {
@@ -39,6 +41,10 @@ struct OnboardingView: View {
             }
 
             Section("Content") {
+                if hasRootMarkdown {
+                    Text("Markdown at the project root cannot keep images beside each post. Put each post in its own folder before you create the configuration.")
+                        .foregroundStyle(.secondary)
+                }
                 ForEach($packages) { $package in
                     VStack(alignment: .leading) {
                         TextField("Package name", text: $package.name)
@@ -105,7 +111,7 @@ struct OnboardingView: View {
     }
 
     private func addPackage() {
-        packages.append(SetupPackage(name: "content", path: "content", route: "/{path}"))
+        packages.append(SetupPackage(name: "", path: "", route: ""))
     }
 
     private func removePackage(_ id: SetupPackage.ID) {

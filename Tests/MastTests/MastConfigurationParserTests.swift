@@ -75,9 +75,11 @@ struct MastConfigurationParserTests {
         defer { try? FileManager.default.removeItem(at: rootURL) }
         try "# Post".write(to: contentURL.appending(path: "index.md"), atomically: true, encoding: .utf8)
         try "# Note".write(to: notesURL.appending(path: "readme.md"), atomically: true, encoding: .utf8)
+        try "# Root".write(to: rootURL.appending(path: "README.md"), atomically: true, encoding: .utf8)
 
-        let packages = MarkdownContentDiscovery.suggestedPackages(at: rootURL)
+        let discovery = MarkdownContentDiscovery.discover(at: rootURL)
 
-        #expect(packages.map(\.path) == ["content", "notes"])
+        #expect(discovery.packages.map(\.path) == ["content/blog", "content/blog/post", "notes"])
+        #expect(discovery.hasRootMarkdown)
     }
 }
