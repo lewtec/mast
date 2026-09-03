@@ -25,6 +25,7 @@
 		69A3C4B7379E8BBA9AA3E2C8 /* EditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A67E67134771F617DDA5DAFE /* EditorView.swift */; };
 		6DEB8F6F36CBC14361449AA4 /* MastConfigurationParserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 62180A10C7951D3E87C84EAC /* MastConfigurationParserTests.swift */; };
 		732EB1DE160312C900B0BCEE /* Post.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9A2CBEC9005AED22BC56B8F /* Post.swift */; };
+		752254703DA7B447D3523E8F /* ServerProcessGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4A243DCDE8696782A3E7606 /* ServerProcessGroup.swift */; };
 		77EBC1414DC090DA0B060A70 /* MarkdownTextEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49BCC9F2C527C2B186306C80 /* MarkdownTextEditor.swift */; };
 		78CA8112904299F22DB3229A /* MastConfigurationError.swift in Sources */ = {isa = PBXBuildFile; fileRef = F61DDF8E6838FDC791F97187 /* MastConfigurationError.swift */; };
 		81A01958B8823B80476566D3 /* ProjectLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 371ABE72E51E386722D880C6 /* ProjectLoader.swift */; };
@@ -81,6 +82,7 @@
 		BF8050BF87B2E998CF30FE93 /* MastTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MastTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		C9A2CBEC9005AED22BC56B8F /* Post.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Post.swift; sourceTree = "<group>"; };
 		CEB5FA73170DC734D618F3AA /* PackageBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackageBuilder.swift; sourceTree = "<group>"; };
+		D4A243DCDE8696782A3E7606 /* ServerProcessGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerProcessGroup.swift; sourceTree = "<group>"; };
 		E15DAAF5A9D0D6B8DC9C4BDA /* WelcomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeView.swift; sourceTree = "<group>"; };
 		E1870911D2B049EC9E4614FE /* PreviewPlaceholderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewPlaceholderView.swift; sourceTree = "<group>"; };
 		EC7959DDCC862AD67D86AB47 /* PreviewPaneView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewPaneView.swift; sourceTree = "<group>"; };
@@ -94,6 +96,7 @@
 			children = (
 				440CC428DF9C60BDACE703B0 /* AppModel.swift */,
 				9D701FDC3A64E2679FC5DB89 /* MastApp.swift */,
+				D4A243DCDE8696782A3E7606 /* ServerProcessGroup.swift */,
 			);
 			path = App;
 			sourceTree = "<group>";
@@ -327,6 +330,7 @@
 				81A01958B8823B80476566D3 /* ProjectLoader.swift in Sources */,
 				95AEB604D12F15DE6F94C725 /* RootView.swift in Sources */,
 				18A754D63C23824C94B9A7E6 /* ServerConfiguration.swift in Sources */,
+				752254703DA7B447D3523E8F /* ServerProcessGroup.swift in Sources */,
 				A097177D3899F9B8199140F6 /* ServerStatusIndicator.swift in Sources */,
 				160314415A0E645855F409B3 /* SetupPackage.swift in Sources */,
 				625D7679877A4C9C1DE0E9B5 /* WelcomeView.swift in Sources */,

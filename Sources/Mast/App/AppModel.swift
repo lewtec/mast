@@ -34,7 +34,7 @@ final class AppModel {
     var configurationSource = ""
     var setupRootURL: URL?
     var isShowingSetup = false
-    private var serverProcess: Process?
+    private var serverProcess: ServerProcessGroup?
     private var serverURL: URL?
     private var saveTask: Task<Void, Never>?
     private var previewTask: Task<Void, Never>?
@@ -65,6 +65,18 @@ final class AppModel {
     func restartServer() {
         guard let project else { return }
         startServer(for: project)
+    }
+
+    func stopServer() {
+        let process = serverProcess
+        serverProcess = nil
+        process?.stop()
+        previewTask?.cancel()
+        previewURL = nil
+        previewAddress = nil
+        serverURL = nil
+        serverStatus = .stopped
+        serverMessage = "Development server stopped."
     }
 
     func scheduleSave() {
@@ -150,13 +162,7 @@ final class AppModel {
     }
 
     private func startServer(for project: Project) {
-        let previousProcess = serverProcess
-        serverProcess = nil
-        previousProcess?.terminate()
-        previewTask?.cancel()
-        previewURL = nil
-        previewAddress = nil
-        serverURL = nil
+        stopServer()
         serverCommand = nil
         serverOutput = ""
         serverStatus = .starting
@@ -170,14 +176,9 @@ final class AppModel {
         let address = project.configuration.server.url.replacing("{port}", with: String(port))
         previewAddress = address
         serverCommand = command
-        let process = Process()
-        let outputPipe = Pipe()
-        process.executableURL = URL(filePath: "/bin/zsh")
-        process.arguments = ["-lc", command]
-        process.currentDirectoryURL = project.rootURL
-        process.standardOutput = outputPipe
-        process.standardError = outputPipe
-        outputPipe.fileHandleForReading.readabilityHandler = { [weak self, weak process] handle in
+        do {
+            let process = try ServerProcessGroup(command: command, currentDirectoryURL: project.rootURL)
+            process.outputHandle.readabilityHandler = { [weak self, weak process] handle in
             let data = handle.availableData
             guard !data.isEmpty else {
                 handle.readabilityHandler = nil
@@ -188,18 +189,16 @@ final class AppModel {
                 guard let self, let process, self.serverProcess === process else { return }
                 self.appendServerOutput(output)
             }
-        }
-        process.terminationHandler = { [weak self] endedProcess in
-            Task { @MainActor [weak self] in
-                guard let self, self.serverProcess === endedProcess else { return }
+            }
+            Task { @MainActor [weak self, weak process] in
+                guard let process else { return }
+                let terminationStatus = await process.waitForTermination()
+                guard let self, self.serverProcess === process else { return }
                 self.serverProcess = nil
                 self.previewURL = nil
                 self.serverStatus = .failed
-                self.serverMessage = "Development server exited with status \(endedProcess.terminationStatus)."
+                self.serverMessage = "Development server exited with status \(terminationStatus)."
             }
-        }
-        do {
-            try process.run()
             serverProcess = process
             let url = URL(string: address)
             previewTask = Task { [weak self, weak process] in

@@ -1,9 +1,19 @@
 import Foundation
 import Testing
 import AppKit
+import Darwin
 @testable import Mast
 
 struct MastConfigurationParserTests {
+    @Test
+    func launchesDevelopmentServerInItsOwnProcessGroup() async throws {
+        let process = try ServerProcessGroup(command: "sleep 10 & wait", currentDirectoryURL: .temporaryDirectory)
+        #expect(getpgid(process.processIdentifier) == process.processIdentifier)
+
+        process.stop()
+        #expect(await process.waitForTermination() == 143)
+    }
+
     @MainActor
     @Test
     func markdownHighlightingPreservesLiteralDashes() {
