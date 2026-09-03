@@ -3,6 +3,7 @@ import SwiftUI
 struct EditorView: View {
     @Binding var text: String
     let post: Post?
+    let save: () -> Void
 
     var body: some View {
         Group {
@@ -10,6 +11,7 @@ struct EditorView: View {
                 TextEditor(text: $text)
                     .font(.system(.body, design: .monospaced))
                     .accessibilityLabel("Markdown editor for \(post.title)")
+                    .onChange(of: text) { _, _ in save() }
             } else {
                 ContentUnavailableView(
                     "Select a post",

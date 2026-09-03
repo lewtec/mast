@@ -52,15 +52,19 @@ enum ProjectLoader {
 
     private static func postFiles(in files: [URL], languages: [String]) -> [URL] {
         if languages.isEmpty {
-            return files.filter { $0.lastPathComponent == "index.md" }
+            return files.filter { ["index.md", "index.mdx"].contains($0.lastPathComponent) }
         }
 
         return files.filter { fileURL in
-            languages.contains { fileURL.lastPathComponent == "index.\($0).md" }
+            languages.contains { language in
+                ["index.\(language).md", "index.\(language).mdx"].contains(fileURL.lastPathComponent)
+            }
         }
     }
 
     private static func language(for filename: String, languages: [String]) -> String? {
-        languages.first { filename == "index.\($0).md" }
+        languages.first { language in
+            ["index.\(language).md", "index.\(language).mdx"].contains(filename)
+        }
     }
 }

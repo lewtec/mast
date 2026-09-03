@@ -7,13 +7,16 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0533AF15C84608F20A675095 /* PreviewWebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B04C689B6F1CAAC0DC20DABF /* PreviewWebView.swift */; };
 		06657A8CA023D8A763396DE4 /* MastConfigurationWriter.swift in Sources */ = {isa = PBXBuildFile; fileRef = B06ADED83F166C02E92FF07C /* MastConfigurationWriter.swift */; };
 		14E92B500934229A0B8C4F78 /* MarkdownContentDiscovery.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2932B8315B4F7560635AA83 /* MarkdownContentDiscovery.swift */; };
+		15D25F308A4D9EFA30A71F1F /* MarkdownDiscoveryResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06E0E102EADDA08A7B483785 /* MarkdownDiscoveryResult.swift */; };
 		160314415A0E645855F409B3 /* SetupPackage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AA14BF2514DD756201CD151 /* SetupPackage.swift */; };
 		18A754D63C23824C94B9A7E6 /* ServerConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9364A0FD86D8486E6B1B00D2 /* ServerConfiguration.swift */; };
 		2DD5EA14DBF86ABA656D5288 /* PreviewPlaceholderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1870911D2B049EC9E4614FE /* PreviewPlaceholderView.swift */; };
 		3A25B00B908CEAFAD71FB24C /* PackageBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEB5FA73170DC734D618F3AA /* PackageBuilder.swift */; };
 		553B106ACF26E777D2D0DEA8 /* MastApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D701FDC3A64E2679FC5DB89 /* MastApp.swift */; };
+		597178B60759509FD2CB2427 /* PortAllocator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C0D2A554C67A58286005BA8 /* PortAllocator.swift */; };
 		5B86A1D195149D44FB792786 /* Project.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D67944C40BA7009B6B79223 /* Project.swift */; };
 		625D7679877A4C9C1DE0E9B5 /* WelcomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E15DAAF5A9D0D6B8DC9C4BDA /* WelcomeView.swift */; };
 		69A3C4B7379E8BBA9AA3E2C8 /* EditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A67E67134771F617DDA5DAFE /* EditorView.swift */; };
@@ -44,6 +47,7 @@
 
 /* Begin PBXFileReference section */
 		0606C29B14D424CFBE3D8F92 /* MastConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MastConfiguration.swift; sourceTree = "<group>"; };
+		06E0E102EADDA08A7B483785 /* MarkdownDiscoveryResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkdownDiscoveryResult.swift; sourceTree = "<group>"; };
 		0C13274E2F8C443ACC965CAA /* PostListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostListView.swift; sourceTree = "<group>"; };
 		15AAFCFE3052F7C38D1332D7 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
 		27B01D46588533900C97F462 /* Mast.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Mast.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -54,12 +58,14 @@
 		440CC428DF9C60BDACE703B0 /* AppModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppModel.swift; sourceTree = "<group>"; };
 		62180A10C7951D3E87C84EAC /* MastConfigurationParserTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MastConfigurationParserTests.swift; sourceTree = "<group>"; };
 		746CDB34DE14CED42953832E /* WorkspaceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceView.swift; sourceTree = "<group>"; };
+		7C0D2A554C67A58286005BA8 /* PortAllocator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PortAllocator.swift; sourceTree = "<group>"; };
 		856432989A1A1243796202F6 /* OnboardingDefaults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingDefaults.swift; sourceTree = "<group>"; };
 		8D79FC5A39106117CFAC4F77 /* MastConfigurationParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MastConfigurationParser.swift; sourceTree = "<group>"; };
 		9364A0FD86D8486E6B1B00D2 /* ServerConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerConfiguration.swift; sourceTree = "<group>"; };
 		9D701FDC3A64E2679FC5DB89 /* MastApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MastApp.swift; sourceTree = "<group>"; };
 		A2932B8315B4F7560635AA83 /* MarkdownContentDiscovery.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkdownContentDiscovery.swift; sourceTree = "<group>"; };
 		A67E67134771F617DDA5DAFE /* EditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditorView.swift; sourceTree = "<group>"; };
+		B04C689B6F1CAAC0DC20DABF /* PreviewWebView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewWebView.swift; sourceTree = "<group>"; };
 		B06ADED83F166C02E92FF07C /* MastConfigurationWriter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MastConfigurationWriter.swift; sourceTree = "<group>"; };
 		BF8050BF87B2E998CF30FE93 /* MastTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MastTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		C9A2CBEC9005AED22BC56B8F /* Post.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Post.swift; sourceTree = "<group>"; };
@@ -85,6 +91,7 @@
 			children = (
 				329797B1212A22003715F815 /* ContentPackage.swift */,
 				A2932B8315B4F7560635AA83 /* MarkdownContentDiscovery.swift */,
+				06E0E102EADDA08A7B483785 /* MarkdownDiscoveryResult.swift */,
 				0606C29B14D424CFBE3D8F92 /* MastConfiguration.swift */,
 				F61DDF8E6838FDC791F97187 /* MastConfigurationError.swift */,
 				8D79FC5A39106117CFAC4F77 /* MastConfigurationParser.swift */,
@@ -124,6 +131,7 @@
 				F6C542D23F8B7CC07FE8CF94 /* OnboardingView.swift */,
 				0C13274E2F8C443ACC965CAA /* PostListView.swift */,
 				E1870911D2B049EC9E4614FE /* PreviewPlaceholderView.swift */,
+				B04C689B6F1CAAC0DC20DABF /* PreviewWebView.swift */,
 				15AAFCFE3052F7C38D1332D7 /* RootView.swift */,
 				E15DAAF5A9D0D6B8DC9C4BDA /* WelcomeView.swift */,
 				746CDB34DE14CED42953832E /* WorkspaceView.swift */,
@@ -142,6 +150,7 @@
 		B7172B120BCAC09513F47EEC /* Project */ = {
 			isa = PBXGroup;
 			children = (
+				7C0D2A554C67A58286005BA8 /* PortAllocator.swift */,
 				C9A2CBEC9005AED22BC56B8F /* Post.swift */,
 				3D67944C40BA7009B6B79223 /* Project.swift */,
 				371ABE72E51E386722D880C6 /* ProjectLoader.swift */,
@@ -266,6 +275,7 @@
 				A49944CF2E76262BC8686826 /* ContentPackage.swift in Sources */,
 				69A3C4B7379E8BBA9AA3E2C8 /* EditorView.swift in Sources */,
 				14E92B500934229A0B8C4F78 /* MarkdownContentDiscovery.swift in Sources */,
+				15D25F308A4D9EFA30A71F1F /* MarkdownDiscoveryResult.swift in Sources */,
 				553B106ACF26E777D2D0DEA8 /* MastApp.swift in Sources */,
 				B5889E80DE5A5EB9F39F505C /* MastConfiguration.swift in Sources */,
 				78CA8112904299F22DB3229A /* MastConfigurationError.swift in Sources */,
@@ -274,9 +284,11 @@
 				A086A6E6ADDC4D75420C9FA4 /* OnboardingDefaults.swift in Sources */,
 				EB79D0D2A9BB79E733693EF0 /* OnboardingView.swift in Sources */,
 				3A25B00B908CEAFAD71FB24C /* PackageBuilder.swift in Sources */,
+				597178B60759509FD2CB2427 /* PortAllocator.swift in Sources */,
 				732EB1DE160312C900B0BCEE /* Post.swift in Sources */,
 				B535BB56BB690F7280A0728B /* PostListView.swift in Sources */,
 				2DD5EA14DBF86ABA656D5288 /* PreviewPlaceholderView.swift in Sources */,
+				0533AF15C84608F20A675095 /* PreviewWebView.swift in Sources */,
 				5B86A1D195149D44FB792786 /* Project.swift in Sources */,
 				81A01958B8823B80476566D3 /* ProjectLoader.swift in Sources */,
 				95AEB604D12F15DE6F94C725 /* RootView.swift in Sources */,

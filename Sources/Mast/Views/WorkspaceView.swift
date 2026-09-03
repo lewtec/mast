@@ -9,10 +9,16 @@ struct WorkspaceView: View {
             PostListView(posts: project.posts, selection: $model.selectedPost)
                 .frame(minWidth: 220, idealWidth: 260)
 
-            EditorView(text: $model.editorText, post: model.selectedPost)
+            EditorView(text: $model.editorText, post: model.selectedPost, save: model.scheduleSave)
                 .frame(minWidth: 360)
 
-            PreviewPlaceholderView(urlTemplate: project.configuration.server.url)
+            Group {
+                if let previewURL = model.previewURL {
+                    PreviewWebView(url: previewURL)
+                } else {
+                    PreviewPlaceholderView(urlTemplate: project.configuration.server.url)
+                }
+            }
                 .frame(minWidth: 300, idealWidth: 400)
         }
         .onChange(of: model.selectedPost) { _, post in

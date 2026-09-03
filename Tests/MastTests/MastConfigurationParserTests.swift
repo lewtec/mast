@@ -66,7 +66,7 @@ struct MastConfigurationParserTests {
     }
 
     @Test
-    func discoversTopLevelFoldersThatContainMarkdown() throws {
+    func discoversContentFoldersAndIgnoresRepositoryReadmes() throws {
         let rootURL = URL.temporaryDirectory.appending(path: UUID().uuidString)
         let contentURL = rootURL.appending(path: "content/blog/post")
         let notesURL = rootURL.appending(path: "notes")
@@ -80,6 +80,33 @@ struct MastConfigurationParserTests {
         let discovery = MarkdownContentDiscovery.discover(at: rootURL)
 
         #expect(discovery.packages.map(\.path) == ["content/blog", "content/blog/post", "notes"])
-        #expect(discovery.hasRootMarkdown)
+        #expect(!discovery.hasRootMarkdown)
+    }
+
+    @Test
+    func loadsMarkdownAndMDXPosts() throws {
+        let rootURL = URL.temporaryDirectory.appending(path: UUID().uuidString)
+        let markdownPostURL = rootURL.appending(path: "content/markdown-post")
+        let mdxPostURL = rootURL.appending(path: "content/mdx-post")
+        try FileManager.default.createDirectory(at: markdownPostURL, withIntermediateDirectories: true)
+        try FileManager.default.createDirectory(at: mdxPostURL, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: rootURL) }
+
+        try "# Markdown".write(to: markdownPostURL.appending(path: "index.md"), atomically: true, encoding: .utf8)
+        try "# MDX".write(to: mdxPostURL.appending(path: "index.mdx"), atomically: true, encoding: .utf8)
+        try """
+        [server]
+        preset = "custom"
+        command = "echo server"
+        url = "http://127.0.0.1:{port}"
+
+        [content.packages.posts]
+        path = "content"
+        route = "/{path}"
+        """.write(to: rootURL.appending(path: "mast.toml"), atomically: true, encoding: .utf8)
+
+        let project = try ProjectLoader.load(at: rootURL)
+
+        #expect(project.posts.map(\.fileURL.lastPathComponent) == ["index.md", "index.mdx"])
     }
 }

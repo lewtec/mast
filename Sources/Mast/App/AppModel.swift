@@ -9,8 +9,12 @@ final class AppModel {
     var editorText = ""
     var errorMessage: String?
     var isShowingError = false
+    var previewURL: URL?
     var setupRootURL: URL?
     var isShowingSetup = false
+    private var serverProcess: Process?
+    private var saveTask: Task<Void, Never>?
+    private var previewTask: Task<Void, Never>?
 
     func openProject(at rootURL: URL) {
         let configurationURL = rootURL.appending(path: "mast.toml")
@@ -24,11 +28,62 @@ final class AppModel {
             let loadedProject = try ProjectLoader.load(at: rootURL)
             project = loadedProject
             selectPost(loadedProject.posts.first)
+            startServer(for: loadedProject)
         } catch {
             project = nil
             selectedPost = nil
             editorText = ""
             errorMessage = error.localizedDescription
+            isShowingError = true
+        }
+    }
+
+    func scheduleSave() {
+        guard let post = selectedPost else { return }
+        let text = editorText
+        saveTask?.cancel()
+        saveTask = Task { [weak self] in
+            try? await Task.sleep(for: .milliseconds(500))
+            guard !Task.isCancelled else { return }
+            self?.save(text, to: post)
+        }
+    }
+
+    func save() {
+        guard let post = selectedPost else { return }
+        save(editorText, to: post)
+    }
+
+    private func save(_ text: String, to post: Post) {
+        do {
+            try text.write(to: post.fileURL, atomically: true, encoding: .utf8)
+        } catch {
+            errorMessage = "Mast could not save \(post.fileURL.lastPathComponent): \(error.localizedDescription)"
+            isShowingError = true
+        }
+    }
+
+    private func startServer(for project: Project) {
+        serverProcess?.terminate()
+        previewTask?.cancel()
+        previewURL = nil
+        guard let port = PortAllocator.availablePort() else { return }
+        let command = project.configuration.server.command.replacing("{port}", with: String(port))
+        let process = Process()
+        process.executableURL = URL(filePath: "/bin/zsh")
+        process.arguments = ["-lc", command]
+        process.currentDirectoryURL = project.rootURL
+        do {
+            try process.run()
+            serverProcess = process
+            let url = URL(string: project.configuration.server.url.replacing("{port}", with: String(port)))
+            previewTask = Task { [weak self] in
+                try? await Task.sleep(for: .seconds(1))
+                guard !Task.isCancelled else { return }
+                self?.previewURL = url
+            }
+        } catch {
+            errorMessage = "Mast could not start the development server: \(error.localizedDescription)"
             isShowingError = true
         }
     }

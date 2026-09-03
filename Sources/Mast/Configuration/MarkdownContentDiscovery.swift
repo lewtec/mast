@@ -13,13 +13,13 @@ enum MarkdownContentDiscovery {
         var folders: Set<String> = []
         var hasRootMarkdown = false
         while let fileURL = enumerator?.nextObject() as? URL {
-            guard fileURL.pathExtension == "md" else { continue }
+            guard ["md", "mdx"].contains(fileURL.pathExtension) else { continue }
             let filePath = fileURL.resolvingSymlinksInPath().path()
             let relativePath = filePath.replacing(rootPath, with: "")
             let components = relativePath.split(separator: "/").map(String.init)
             let folderComponents = components.dropLast()
             guard let firstFolder = folderComponents.first, !excludedFolders.contains(firstFolder) else {
-                hasRootMarkdown = true
+                hasRootMarkdown = !["README.md", "SPEC.md"].contains(fileURL.lastPathComponent)
                 continue
             }
 
