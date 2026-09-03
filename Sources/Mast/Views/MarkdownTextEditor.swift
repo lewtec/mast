@@ -13,12 +13,12 @@ struct MarkdownTextEditor: NSViewRepresentable {
     func makeNSView(context: Context) -> NSScrollView {
         let textStorage = NSTextStorage(string: text)
         let layoutManager = NSLayoutManager()
-        let textContainer = NSTextContainer(containerSize: .zero)
+        let textContainer = NSTextContainer(containerSize: NSSize(width: 860, height: CGFloat.greatestFiniteMagnitude))
         textContainer.widthTracksTextView = true
         layoutManager.addTextContainer(textContainer)
         textStorage.addLayoutManager(layoutManager)
 
-        let textView = NSTextView(frame: .zero, textContainer: textContainer)
+        let textView = NSTextView(frame: NSRect(x: 0, y: 0, width: 860, height: 1_000), textContainer: textContainer)
         textView.delegate = context.coordinator
         textView.font = MarkdownHighlighter.bodyFont
         textView.isRichText = false
@@ -28,7 +28,9 @@ struct MarkdownTextEditor: NSViewRepresentable {
         textView.isAutomaticQuoteSubstitutionEnabled = false
         textView.isAutomaticTextReplacementEnabled = false
         textView.textContainerInset = NSSize(width: 8, height: 8)
-        textView.autoresizingMask = [.width, .height]
+        textView.isVerticallyResizable = true
+        textView.isHorizontallyResizable = false
+        textView.autoresizingMask = NSView.AutoresizingMask.width
 
         let scrollView = NSScrollView()
         scrollView.borderType = .noBorder
