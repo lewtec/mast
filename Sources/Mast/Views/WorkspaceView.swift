@@ -3,6 +3,8 @@ import SwiftUI
 struct WorkspaceView: View {
     @Bindable var model: AppModel
     let project: Project
+    @State private var isShowingConfiguration = false
+    @State private var isShowingNewPost = false
 
     var body: some View {
         HSplitView {
@@ -21,8 +23,29 @@ struct WorkspaceView: View {
             }
                 .frame(minWidth: 300, idealWidth: 400)
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
         .onChange(of: model.selectedPost) { _, post in
             model.selectPost(post)
         }
+        .toolbar {
+            ToolbarItemGroup {
+                Button("New post", systemImage: "plus", action: showNewPost)
+                Button("Edit mast.toml", systemImage: "slider.horizontal.3", action: showConfiguration)
+            }
+        }
+        .sheet(isPresented: $isShowingConfiguration) {
+            ConfigurationEditorView(source: $model.configurationSource, save: model.saveConfiguration)
+        }
+        .sheet(isPresented: $isShowingNewPost) {
+            NewPostView(packages: project.configuration.packages, create: model.createPost)
+        }
+    }
+
+    private func showNewPost() {
+        isShowingNewPost = true
+    }
+
+    private func showConfiguration() {
+        isShowingConfiguration = true
     }
 }

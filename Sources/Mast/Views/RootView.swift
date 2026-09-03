@@ -15,6 +15,7 @@ struct RootView: View {
                 WelcomeView(openProject: showProjectPicker)
             }
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
         .fileImporter(isPresented: $isProjectPickerPresented, allowedContentTypes: [.folder]) { result in
             switch result {
             case .success(let url):

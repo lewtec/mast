@@ -10,6 +10,7 @@ final class AppModel {
     var errorMessage: String?
     var isShowingError = false
     var previewURL: URL?
+    var configurationSource = ""
     var setupRootURL: URL?
     var isShowingSetup = false
     private var serverProcess: Process?
@@ -27,6 +28,7 @@ final class AppModel {
         do {
             let loadedProject = try ProjectLoader.load(at: rootURL)
             project = loadedProject
+            configurationSource = try String(contentsOf: configurationURL, encoding: .utf8)
             selectPost(loadedProject.posts.first)
             startServer(for: loadedProject)
         } catch {
@@ -52,6 +54,58 @@ final class AppModel {
     func save() {
         guard let post = selectedPost else { return }
         save(editorText, to: post)
+    }
+
+    func saveConfiguration() -> Bool {
+        guard let project else { return false }
+
+        do {
+            _ = try MastConfigurationParser.parse(configurationSource)
+            try configurationSource.write(
+                to: project.rootURL.appending(path: "mast.toml"),
+                atomically: true,
+                encoding: .utf8
+            )
+            openProject(at: project.rootURL)
+            return true
+        } catch {
+            errorMessage = "Mast could not save mast.toml: \(error.localizedDescription)"
+            isShowingError = true
+            return false
+        }
+    }
+
+    func createPost(in package: ContentPackage, slug: String, language: String?) -> Bool {
+        guard let project else { return false }
+        guard !slug.isEmpty, !slug.contains("/") else {
+            errorMessage = "A post folder name cannot be empty or contain a slash."
+            isShowingError = true
+            return false
+        }
+
+        let postURL = project.rootURL.appending(path: package.path).appending(path: slug)
+        let filename = language.map { "index.\($0).md" } ?? "index.md"
+        let fileURL = postURL.appending(path: filename)
+
+        guard !FileManager.default.fileExists(atPath: postURL.path()) else {
+            errorMessage = "A post named \(slug) already exists in \(package.name)."
+            isShowingError = true
+            return false
+        }
+
+        do {
+            try FileManager.default.createDirectory(at: postURL, withIntermediateDirectories: true)
+            try "".write(to: fileURL, atomically: true, encoding: .utf8)
+            let reloadedProject = try ProjectLoader.load(at: project.rootURL)
+            self.project = reloadedProject
+            let createdPostPath = fileURL.resolvingSymlinksInPath().path()
+            selectPost(reloadedProject.posts.first { $0.fileURL.resolvingSymlinksInPath().path() == createdPostPath })
+            return true
+        } catch {
+            errorMessage = "Mast could not create the post: \(error.localizedDescription)"
+            isShowingError = true
+            return false
+        }
     }
 
     private func save(_ text: String, to post: Post) {

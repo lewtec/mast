@@ -5,15 +5,26 @@ struct PostListView: View {
     @Binding var selection: Post?
 
     var body: some View {
-        List(posts, selection: $selection) { post in
-            VStack(alignment: .leading) {
-                Text(post.title)
-                Text(post.packageName)
-                    .font(.caption)
+        VStack(spacing: 0) {
+            HStack {
+                Text("Posts")
+                    .font(.headline)
+                Spacer()
+                Text(posts.count, format: .number)
                     .foregroundStyle(.secondary)
             }
-            .tag(post)
+            .padding()
+
+            List(posts, selection: $selection) { post in
+                VStack(alignment: .leading) {
+                    Text(post.title)
+                    Text(post.packageName)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+                .tag(post)
+            }
         }
-        .navigationTitle("Posts")
+        .frame(maxHeight: .infinity)
     }
 }

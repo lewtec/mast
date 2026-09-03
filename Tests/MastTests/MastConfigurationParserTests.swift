@@ -112,4 +112,32 @@ struct MastConfigurationParserTests {
 
         #expect(project.posts.map(\.fileURL.lastPathComponent) == ["index.md", "index.mdx"])
     }
+
+    @MainActor
+    @Test
+    func createsPostInSelectedPackageUsingDefaultLanguage() throws {
+        let rootURL = URL.temporaryDirectory.appending(path: UUID().uuidString)
+        try FileManager.default.createDirectory(at: rootURL, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: rootURL) }
+        try """
+        [server]
+        preset = "custom"
+        command = "true"
+        url = "http://127.0.0.1:{port}"
+
+        [content.packages.posts]
+        path = "content/posts"
+        languages = ["en", "pt"]
+        route = "/{lang}/post/{path}"
+        """.write(to: rootURL.appending(path: "mast.toml"), atomically: true, encoding: .utf8)
+
+        let model = AppModel()
+        model.openProject(at: rootURL)
+        let package = try #require(model.project?.configuration.packages.first)
+
+        #expect(model.createPost(in: package, slug: "hello", language: package.languages.first))
+        #expect(FileManager.default.fileExists(atPath: rootURL.appending(path: "content/posts/hello/index.en.md").path()))
+        #expect(model.project?.posts.count == 1)
+        #expect(model.selectedPost?.fileURL.lastPathComponent == "index.en.md")
+    }
 }

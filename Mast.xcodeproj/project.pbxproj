@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		0533AF15C84608F20A675095 /* PreviewWebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B04C689B6F1CAAC0DC20DABF /* PreviewWebView.swift */; };
 		06657A8CA023D8A763396DE4 /* MastConfigurationWriter.swift in Sources */ = {isa = PBXBuildFile; fileRef = B06ADED83F166C02E92FF07C /* MastConfigurationWriter.swift */; };
+		10EA546F03E8212889EDD654 /* ConfigurationEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6F2E363CFAF60F6A88AEE5A /* ConfigurationEditorView.swift */; };
+		138B393AD1ED3FA5DCEE0E83 /* NewPostView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B407D14021A3E813518F9090 /* NewPostView.swift */; };
 		14E92B500934229A0B8C4F78 /* MarkdownContentDiscovery.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2932B8315B4F7560635AA83 /* MarkdownContentDiscovery.swift */; };
 		15D25F308A4D9EFA30A71F1F /* MarkdownDiscoveryResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06E0E102EADDA08A7B483785 /* MarkdownDiscoveryResult.swift */; };
 		160314415A0E645855F409B3 /* SetupPackage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AA14BF2514DD756201CD151 /* SetupPackage.swift */; };
@@ -67,6 +69,8 @@
 		A67E67134771F617DDA5DAFE /* EditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditorView.swift; sourceTree = "<group>"; };
 		B04C689B6F1CAAC0DC20DABF /* PreviewWebView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewWebView.swift; sourceTree = "<group>"; };
 		B06ADED83F166C02E92FF07C /* MastConfigurationWriter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MastConfigurationWriter.swift; sourceTree = "<group>"; };
+		B407D14021A3E813518F9090 /* NewPostView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewPostView.swift; sourceTree = "<group>"; };
+		B6F2E363CFAF60F6A88AEE5A /* ConfigurationEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigurationEditorView.swift; sourceTree = "<group>"; };
 		BF8050BF87B2E998CF30FE93 /* MastTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MastTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		C9A2CBEC9005AED22BC56B8F /* Post.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Post.swift; sourceTree = "<group>"; };
 		CEB5FA73170DC734D618F3AA /* PackageBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackageBuilder.swift; sourceTree = "<group>"; };
@@ -127,7 +131,9 @@
 		62DD1746EB2EF0203B414203 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				B6F2E363CFAF60F6A88AEE5A /* ConfigurationEditorView.swift */,
 				A67E67134771F617DDA5DAFE /* EditorView.swift */,
+				B407D14021A3E813518F9090 /* NewPostView.swift */,
 				F6C542D23F8B7CC07FE8CF94 /* OnboardingView.swift */,
 				0C13274E2F8C443ACC965CAA /* PostListView.swift */,
 				E1870911D2B049EC9E4614FE /* PreviewPlaceholderView.swift */,
@@ -272,6 +278,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				881D94AEE6DDCD1E0750564C /* AppModel.swift in Sources */,
+				10EA546F03E8212889EDD654 /* ConfigurationEditorView.swift in Sources */,
 				A49944CF2E76262BC8686826 /* ContentPackage.swift in Sources */,
 				69A3C4B7379E8BBA9AA3E2C8 /* EditorView.swift in Sources */,
 				14E92B500934229A0B8C4F78 /* MarkdownContentDiscovery.swift in Sources */,
@@ -281,6 +288,7 @@
 				78CA8112904299F22DB3229A /* MastConfigurationError.swift in Sources */,
 				9C0FB2EAFE2C0D859439E61F /* MastConfigurationParser.swift in Sources */,
 				06657A8CA023D8A763396DE4 /* MastConfigurationWriter.swift in Sources */,
+				138B393AD1ED3FA5DCEE0E83 /* NewPostView.swift in Sources */,
 				A086A6E6ADDC4D75420C9FA4 /* OnboardingDefaults.swift in Sources */,
 				EB79D0D2A9BB79E733693EF0 /* OnboardingView.swift in Sources */,
 				3A25B00B908CEAFAD71FB24C /* PackageBuilder.swift in Sources */,
