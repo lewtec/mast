@@ -32,6 +32,7 @@ struct WorkspaceView: View {
         }
         .toolbar {
             ToolbarItemGroup {
+                ServerStatusIndicator(status: model.serverStatus, message: model.serverMessage)
                 Button("New post", systemImage: "plus", action: showNewPost)
                 Button("Configure project", systemImage: "slider.horizontal.3", action: showProjectSetup)
                 Button("Edit mast.toml", systemImage: "doc.text", action: showConfiguration)

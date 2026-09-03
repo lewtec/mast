@@ -1,6 +1,22 @@
 import Foundation
 import Observation
 
+enum ServerStatus: Equatable {
+    case stopped
+    case starting
+    case running
+    case failed
+
+    var label: String {
+        switch self {
+        case .stopped: "Server stopped"
+        case .starting: "Starting server"
+        case .running: "Server running"
+        case .failed: "Server failed"
+        }
+    }
+}
+
 @MainActor
 @Observable
 final class AppModel {
@@ -10,6 +26,8 @@ final class AppModel {
     var errorMessage: String?
     var isShowingError = false
     var previewURL: URL?
+    var serverStatus: ServerStatus = .stopped
+    var serverMessage = "Server has not started."
     var configurationSource = ""
     var setupRootURL: URL?
     var isShowingSetup = false
@@ -118,25 +136,51 @@ final class AppModel {
     }
 
     private func startServer(for project: Project) {
-        serverProcess?.terminate()
+        let previousProcess = serverProcess
+        serverProcess = nil
+        previousProcess?.terminate()
         previewTask?.cancel()
         previewURL = nil
-        guard let port = PortAllocator.availablePort() else { return }
+        serverStatus = .starting
+        serverMessage = "Starting \(project.configuration.server.command)"
+        guard let port = PortAllocator.availablePort() else {
+            serverStatus = .failed
+            serverMessage = "Mast could not reserve a port for the development server."
+            return
+        }
         let command = project.configuration.server.command.replacing("{port}", with: String(port))
         let process = Process()
         process.executableURL = URL(filePath: "/bin/zsh")
         process.arguments = ["-lc", command]
         process.currentDirectoryURL = project.rootURL
+        process.terminationHandler = { [weak self] endedProcess in
+            Task { @MainActor [weak self] in
+                guard let self, self.serverProcess === endedProcess else { return }
+                self.serverProcess = nil
+                self.previewURL = nil
+                self.serverStatus = .failed
+                self.serverMessage = "Development server exited with status \(endedProcess.terminationStatus)."
+            }
+        }
         do {
             try process.run()
             serverProcess = process
             let url = URL(string: project.configuration.server.url.replacing("{port}", with: String(port)))
-            previewTask = Task { [weak self] in
+            previewTask = Task { [weak self, weak process] in
                 try? await Task.sleep(for: .seconds(1))
-                guard !Task.isCancelled else { return }
-                self?.previewURL = url
+                guard let self, let process, !Task.isCancelled, self.serverProcess === process else { return }
+                guard process.isRunning else {
+                    self.serverStatus = .failed
+                    self.serverMessage = "Development server exited before it became ready."
+                    return
+                }
+                self.serverStatus = .running
+                self.serverMessage = "Development server is running on port \(port)."
+                self.previewURL = url
             }
         } catch {
+            serverStatus = .failed
+            serverMessage = "Mast could not start the development server: \(error.localizedDescription)"
             errorMessage = "Mast could not start the development server: \(error.localizedDescription)"
             isShowingError = true
         }
