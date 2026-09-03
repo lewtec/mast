@@ -10,7 +10,15 @@ struct WorkspaceView: View {
 
     var body: some View {
         NavigationSplitView(columnVisibility: $columnVisibility) {
-            PostListView(posts: project.posts, selection: $model.selectedPost)
+            PostListView(
+                posts: project.posts,
+                selection: $model.selectedPost,
+                serverStatus: model.serverStatus,
+                serverMessage: model.serverMessage,
+                createPost: showNewPost,
+                configureProject: showProjectSetup,
+                editConfiguration: showConfiguration
+            )
                 .navigationSplitViewColumnWidth(min: 220, ideal: 260)
         } content: {
             EditorView(text: $model.editorText, post: model.selectedPost, save: model.scheduleSave)
@@ -29,14 +37,6 @@ struct WorkspaceView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .onChange(of: model.selectedPost) { _, post in
             model.selectPost(post)
-        }
-        .toolbar {
-            ToolbarItemGroup {
-                ServerStatusIndicator(status: model.serverStatus, message: model.serverMessage)
-                Button("New post", systemImage: "plus", action: showNewPost)
-                Button("Configure project", systemImage: "slider.horizontal.3", action: showProjectSetup)
-                Button("Edit mast.toml", systemImage: "doc.text", action: showConfiguration)
-            }
         }
         .sheet(isPresented: $isShowingProjectSetup) {
             NavigationStack {
