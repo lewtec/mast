@@ -5,6 +5,42 @@ import Darwin
 @testable import Mast
 
 struct MastConfigurationParserTests {
+    @MainActor
+    @Test
+    func importsClipboardImageBesidePost() throws {
+        let rootURL = URL.temporaryDirectory.appending(path: UUID().uuidString)
+        let postURL = rootURL.appending(path: "content/hello/index.md")
+        try FileManager.default.createDirectory(at: postURL.deletingLastPathComponent(), withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: rootURL) }
+        try "# Hello".write(to: postURL, atomically: true, encoding: .utf8)
+
+        let representation = try #require(NSBitmapImageRep(
+            bitmapDataPlanes: nil,
+            pixelsWide: 1,
+            pixelsHigh: 1,
+            bitsPerSample: 8,
+            samplesPerPixel: 4,
+            hasAlpha: true,
+            isPlanar: false,
+            colorSpaceName: .deviceRGB,
+            bitmapFormat: [],
+            bytesPerRow: 0,
+            bitsPerPixel: 0
+        ))
+        let pasteboard = NSPasteboard(name: .init(UUID().uuidString))
+        pasteboard.declareTypes([.tiff], owner: nil)
+        pasteboard.setData(representation.tiffRepresentation, forType: .tiff)
+
+        let post = Post(fileURL: postURL, packageName: "posts", language: nil, relativePath: "hello")
+        let markdown = try ImageAssetImporter.importImage(from: pasteboard, beside: post)
+
+        let imageURLs = try FileManager.default.contentsOfDirectory(
+            at: postURL.deletingLastPathComponent(),
+            includingPropertiesForKeys: nil
+        ).filter { $0.pathExtension == "png" }
+        #expect(markdown == "![](./\(try #require(imageURLs.first).lastPathComponent))")
+    }
+
     @Test
     func launchesDevelopmentServerInItsOwnProcessGroup() async throws {
         let process = try ServerProcessGroup(command: "sleep 10 & wait", currentDirectoryURL: .temporaryDirectory)

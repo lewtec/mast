@@ -4,6 +4,7 @@ import SwiftUI
 @MainActor
 struct MarkdownTextEditor: NSViewRepresentable {
     @Binding var text: String
+    let post: Post
     let onTextChange: () -> Void
 
     func makeCoordinator() -> Coordinator {
@@ -18,7 +19,7 @@ struct MarkdownTextEditor: NSViewRepresentable {
         layoutManager.addTextContainer(textContainer)
         textStorage.addLayoutManager(layoutManager)
 
-        let textView = NSTextView(frame: NSRect(x: 0, y: 0, width: 860, height: 1_000), textContainer: textContainer)
+        let textView = ImageMarkdownTextView(frame: NSRect(x: 0, y: 0, width: 860, height: 1_000), textContainer: textContainer)
         textView.delegate = context.coordinator
         textView.font = MarkdownHighlighter.bodyFont
         textView.isRichText = false
@@ -31,6 +32,10 @@ struct MarkdownTextEditor: NSViewRepresentable {
         textView.isVerticallyResizable = true
         textView.isHorizontallyResizable = false
         textView.autoresizingMask = NSView.AutoresizingMask.width
+        textView.registerForDraggedTypes([.fileURL, .tiff, .png])
+        textView.imageImportHandler = { [weak coordinator = context.coordinator] pasteboard, textView in
+            coordinator?.importImage(from: pasteboard, into: textView) ?? false
+        }
 
         let scrollView = NSScrollView()
         scrollView.borderType = .noBorder
@@ -76,6 +81,42 @@ struct MarkdownTextEditor: NSViewRepresentable {
             MarkdownHighlighter.apply(to: textStorage)
             isApplyingHighlight = false
         }
+
+        func importImage(from pasteboard: NSPasteboard, into textView: NSTextView) -> Bool {
+            guard ImageAssetImporter.canImport(from: pasteboard) else { return false }
+
+            do {
+                guard let markdown = try ImageAssetImporter.importImage(from: pasteboard, beside: parent.post) else {
+                    return true
+                }
+                textView.insertText(markdown, replacementRange: textView.selectedRange())
+                return true
+            } catch {
+                NSAlert(error: error).runModal()
+                return true
+            }
+        }
+    }
+}
+
+private final class ImageMarkdownTextView: NSTextView {
+    var imageImportHandler: ((NSPasteboard, NSTextView) -> Bool)?
+
+    override func paste(_ sender: Any?) {
+        guard imageImportHandler?(NSPasteboard.general, self) != true else { return }
+        super.paste(sender)
+    }
+
+    override func draggingEntered(_ sender: NSDraggingInfo) -> NSDragOperation {
+        if ImageAssetImporter.canImport(from: sender.draggingPasteboard) {
+            return .copy
+        }
+        return super.draggingEntered(sender)
+    }
+
+    override func performDragOperation(_ sender: NSDraggingInfo) -> Bool {
+        guard imageImportHandler?(sender.draggingPasteboard, self) != true else { return true }
+        return super.performDragOperation(sender)
     }
 }
 

@@ -133,9 +133,9 @@ Mast saves after a short debounce when you stop typing. `Command-S` saves immedi
 
 If the open file changes on disk and Mast has no local pending edit, Mast reloads the file. If it has a local pending edit, Mast asks you to keep the editor version, reload the disk version, or compare both versions.
 
-## Image paste
+## Image import
 
-When you paste an image, Mast saves the image in the open post folder and inserts a relative Markdown reference at the cursor.
+When you paste or drop an image, Mast saves the image in the open post folder and inserts a relative Markdown reference at the cursor.
 
 Mast uses the source filename when clipboard metadata or image metadata supplies one. Otherwise, it uses `image-YYYY-MM-DD-HHMMSS.png`. The initial inserted text is `![](./FILENAME.png)`.
 

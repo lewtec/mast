@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		0533AF15C84608F20A675095 /* PreviewWebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B04C689B6F1CAAC0DC20DABF /* PreviewWebView.swift */; };
 		06657A8CA023D8A763396DE4 /* MastConfigurationWriter.swift in Sources */ = {isa = PBXBuildFile; fileRef = B06ADED83F166C02E92FF07C /* MastConfigurationWriter.swift */; };
+		0C01DA18A49480DD96AB3A57 /* ImageAssetImporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 930F200E663C674AE5239E78 /* ImageAssetImporter.swift */; };
 		138B393AD1ED3FA5DCEE0E83 /* NewPostView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B407D14021A3E813518F9090 /* NewPostView.swift */; };
 		14E92B500934229A0B8C4F78 /* MarkdownContentDiscovery.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2932B8315B4F7560635AA83 /* MarkdownContentDiscovery.swift */; };
 		15D25F308A4D9EFA30A71F1F /* MarkdownDiscoveryResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06E0E102EADDA08A7B483785 /* MarkdownDiscoveryResult.swift */; };
@@ -71,6 +72,7 @@
 		7C0D2A554C67A58286005BA8 /* PortAllocator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PortAllocator.swift; sourceTree = "<group>"; };
 		856432989A1A1243796202F6 /* OnboardingDefaults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingDefaults.swift; sourceTree = "<group>"; };
 		8D79FC5A39106117CFAC4F77 /* MastConfigurationParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MastConfigurationParser.swift; sourceTree = "<group>"; };
+		930F200E663C674AE5239E78 /* ImageAssetImporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageAssetImporter.swift; sourceTree = "<group>"; };
 		9364A0FD86D8486E6B1B00D2 /* ServerConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerConfiguration.swift; sourceTree = "<group>"; };
 		945042D8FAD963FCD643EB09 /* NativeWorkspaceSplitView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NativeWorkspaceSplitView.swift; sourceTree = "<group>"; };
 		9D701FDC3A64E2679FC5DB89 /* MastApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MastApp.swift; sourceTree = "<group>"; };
@@ -143,6 +145,7 @@
 			isa = PBXGroup;
 			children = (
 				A67E67134771F617DDA5DAFE /* EditorView.swift */,
+				930F200E663C674AE5239E78 /* ImageAssetImporter.swift */,
 				49BCC9F2C527C2B186306C80 /* MarkdownTextEditor.swift */,
 				945042D8FAD963FCD643EB09 /* NativeWorkspaceSplitView.swift */,
 				B407D14021A3E813518F9090 /* NewPostView.swift */,
@@ -307,6 +310,7 @@
 				881D94AEE6DDCD1E0750564C /* AppModel.swift in Sources */,
 				A49944CF2E76262BC8686826 /* ContentPackage.swift in Sources */,
 				69A3C4B7379E8BBA9AA3E2C8 /* EditorView.swift in Sources */,
+				0C01DA18A49480DD96AB3A57 /* ImageAssetImporter.swift in Sources */,
 				14E92B500934229A0B8C4F78 /* MarkdownContentDiscovery.swift in Sources */,
 				15D25F308A4D9EFA30A71F1F /* MarkdownDiscoveryResult.swift in Sources */,
 				77EBC1414DC090DA0B060A70 /* MarkdownTextEditor.swift in Sources */,
