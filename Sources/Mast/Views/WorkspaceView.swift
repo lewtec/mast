@@ -20,11 +20,10 @@ struct WorkspaceView: View {
                 .navigationSplitViewColumnWidth(min: 220, ideal: 260)
         } detail: {
             PostEditorPaneView(
-                posts: project.posts,
-                selection: $model.selectedPost,
+                selection: model.selectedPost,
                 text: $model.editorText,
                 save: model.scheduleSave,
-                previewVisible: $isPreviewVisible,
+                previewVisible: isPreviewVisible,
                 previewURL: model.previewURL,
                 previewAddress: model.previewAddress,
                 serverStatus: model.serverStatus,
@@ -45,6 +44,24 @@ struct WorkspaceView: View {
                     ServerStatusIndicator(status: model.serverStatus, message: model.serverMessage)
                     Button("New post", systemImage: "plus", action: showNewPost)
                         .labelStyle(.iconOnly)
+                }
+            }
+            ToolbarItemGroup(placement: .primaryAction) {
+                if languagePosts.count > 1 {
+                    Picker("Language", selection: $model.selectedPost) {
+                        ForEach(languagePosts) { post in
+                            Text(post.language ?? "Default").tag(Optional(post))
+                        }
+                    }
+                    .pickerStyle(.segmented)
+                    .frame(maxWidth: 180)
+                }
+
+                Button(
+                    isPreviewVisible ? "Hide preview" : "Show preview",
+                    systemImage: "sidebar.right"
+                ) {
+                    isPreviewVisible.toggle()
                 }
             }
         }
@@ -76,6 +93,13 @@ struct WorkspaceView: View {
 
     private func showProjectSetup() {
         isShowingProjectSetup = true
+    }
+
+    private var languagePosts: [Post] {
+        guard let selection = model.selectedPost else { return [] }
+        return project.posts.filter {
+            $0.packageName == selection.packageName && $0.relativePath == selection.relativePath
+        }
     }
 
 }
