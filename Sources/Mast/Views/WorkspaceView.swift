@@ -4,6 +4,7 @@ struct WorkspaceView: View {
     @Bindable var model: AppModel
     let project: Project
     @State private var isShowingConfiguration = false
+    @State private var isShowingProjectSetup = false
     @State private var isShowingNewPost = false
 
     var body: some View {
@@ -30,7 +31,18 @@ struct WorkspaceView: View {
         .toolbar {
             ToolbarItemGroup {
                 Button("New post", systemImage: "plus", action: showNewPost)
-                Button("Edit mast.toml", systemImage: "slider.horizontal.3", action: showConfiguration)
+                Button("Configure project", systemImage: "slider.horizontal.3", action: showProjectSetup)
+                Button("Edit mast.toml", systemImage: "doc.text", action: showConfiguration)
+            }
+        }
+        .sheet(isPresented: $isShowingProjectSetup) {
+            NavigationStack {
+                OnboardingView(
+                    rootURL: project.rootURL,
+                    complete: model.finishSetup,
+                    configuration: project.configuration,
+                    serverOptionsSource: MastConfigurationWriter.serverOptionsSource(from: model.configurationSource)
+                )
             }
         }
         .sheet(isPresented: $isShowingConfiguration) {
@@ -47,5 +59,9 @@ struct WorkspaceView: View {
 
     private func showConfiguration() {
         isShowingConfiguration = true
+    }
+
+    private func showProjectSetup() {
+        isShowingProjectSetup = true
     }
 }

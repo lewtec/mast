@@ -67,6 +67,33 @@ struct MastConfigurationParserTests {
     }
 
     @Test
+    func writerPreservesServerOptionsWhenReconfiguring() throws {
+        let rootURL = URL.temporaryDirectory.appending(path: UUID().uuidString)
+        try FileManager.default.createDirectory(at: rootURL, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: rootURL) }
+        let existingSource = """
+        [server]
+        preset = "hugo"
+
+        [server.options.hugo]
+        drafts = true
+        """
+
+        try MastConfigurationWriter.write(
+            to: rootURL,
+            preset: "hugo",
+            command: "hugo server --port {port}",
+            url: "http://127.0.0.1:{port}",
+            packages: [SetupPackage(name: "blog", path: "content", route: "/{path}")],
+            serverOptionsSource: MastConfigurationWriter.serverOptionsSource(from: existingSource)
+        )
+
+        let writtenSource = try String(contentsOf: rootURL.appending(path: "mast.toml"), encoding: .utf8)
+
+        #expect(writtenSource.contains("[server.options.hugo]\ndrafts = true"))
+    }
+
+    @Test
     func discoversOnlyFoldersContainingPostIndexFolders() throws {
         let rootURL = URL.temporaryDirectory.appending(path: UUID().uuidString)
         let contentURL = rootURL.appending(path: "content/blog/post")

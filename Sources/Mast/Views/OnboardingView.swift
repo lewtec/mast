@@ -11,17 +11,32 @@ struct OnboardingView: View {
     @State private var packages: [SetupPackage]
     @State private var errorMessage: String?
     private let hasRootMarkdown: Bool
+    private let serverOptionsSource: String
+    private let isEditing: Bool
 
-    init(rootURL: URL, complete: @escaping (URL) -> Void) {
-        let defaults = OnboardingDefaults.detect(at: rootURL)
+    init(
+        rootURL: URL,
+        complete: @escaping (URL) -> Void,
+        configuration: MastConfiguration? = nil,
+        serverOptionsSource: String = ""
+    ) {
+        let defaults = configuration.map {
+            OnboardingDefaults(preset: $0.server.preset, command: $0.server.command, url: $0.server.url)
+        } ?? OnboardingDefaults.detect(at: rootURL)
         self.rootURL = rootURL
         self.complete = complete
         _preset = State(initialValue: defaults.preset)
         _command = State(initialValue: defaults.command)
         _url = State(initialValue: defaults.url)
         let discovery = MarkdownContentDiscovery.discover(at: rootURL)
-        _packages = State(initialValue: discovery.packages)
+        _packages = State(initialValue: configuration.map { configuration in
+            configuration.packages.map { package in
+                SetupPackage(name: package.name, path: package.path, route: package.route, languages: package.languages)
+            }
+        } ?? discovery.packages)
         hasRootMarkdown = discovery.hasRootMarkdown
+        self.serverOptionsSource = serverOptionsSource
+        isEditing = configuration != nil
     }
 
     var body: some View {
@@ -60,13 +75,13 @@ struct OnboardingView: View {
         .formStyle(.grouped)
         .frame(width: 560)
         .padding()
-        .navigationTitle("Set up Mast")
+        .navigationTitle(isEditing ? "Configure Mast" : "Set up Mast")
         .toolbar {
             ToolbarItem(placement: .cancellationAction) {
                 Button("Cancel", action: dismiss.callAsFunction)
             }
             ToolbarItem(placement: .confirmationAction) {
-                Button("Create project", action: createConfiguration)
+                Button(isEditing ? "Save configuration" : "Create project", action: createConfiguration)
                     .disabled(command.isEmpty || url.isEmpty || packages.isEmpty || packages.contains { $0.name.isEmpty || $0.path.isEmpty || $0.route.isEmpty })
             }
         }
@@ -102,7 +117,8 @@ struct OnboardingView: View {
                 preset: preset,
                 command: command,
                 url: url,
-                packages: packages
+                packages: packages,
+                serverOptionsSource: serverOptionsSource
             )
             complete(rootURL)
         } catch {

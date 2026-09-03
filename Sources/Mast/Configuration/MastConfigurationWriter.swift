@@ -6,18 +6,44 @@ enum MastConfigurationWriter {
         preset: String,
         command: String,
         url: String,
-        packages: [SetupPackage]
+        packages: [SetupPackage],
+        serverOptionsSource: String = ""
     ) throws {
-        let source = """
+        var sections = ["""
         [server]
         preset = "\(preset)"
         command = "\(command)"
         url = "\(url)"
-
-        \(packages.map(packageSource).joined(separator: "\n\n"))
-        """
+        """]
+        if !serverOptionsSource.isEmpty {
+            sections.append(serverOptionsSource)
+        }
+        sections.append(contentsOf: packages.map(packageSource))
+        let source = sections.joined(separator: "\n\n")
 
         try source.write(to: rootURL.appending(path: "mast.toml"), atomically: true, encoding: .utf8)
+    }
+
+    static func serverOptionsSource(from source: String) -> String {
+        var sections: [[String]] = []
+        var currentSection: [String]?
+
+        for line in source.components(separatedBy: .newlines) {
+            if line.hasPrefix("[") && line.hasSuffix("]") {
+                if let currentSection {
+                    sections.append(currentSection)
+                }
+                currentSection = line.hasPrefix("[server.options.") ? [line] : nil
+            } else if currentSection != nil {
+                currentSection?.append(line)
+            }
+        }
+
+        if let currentSection {
+            sections.append(currentSection)
+        }
+
+        return sections.map { $0.joined(separator: "\n").trimmingCharacters(in: .whitespacesAndNewlines) }.joined(separator: "\n\n")
     }
 
     private static func packageSource(_ package: SetupPackage) -> String {
