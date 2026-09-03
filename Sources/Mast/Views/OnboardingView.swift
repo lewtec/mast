@@ -8,9 +8,7 @@ struct OnboardingView: View {
     @State private var preset: String
     @State private var command: String
     @State private var url: String
-    @State private var packageName = "blog"
-    @State private var contentPath = "content"
-    @State private var route = "/{path}"
+    @State private var packages: [SetupPackage]
     @State private var errorMessage: String?
 
     init(rootURL: URL, complete: @escaping (URL) -> Void) {
@@ -20,6 +18,8 @@ struct OnboardingView: View {
         _preset = State(initialValue: defaults.preset)
         _command = State(initialValue: defaults.command)
         _url = State(initialValue: defaults.url)
+        let discoveredPackages = MarkdownContentDiscovery.suggestedPackages(at: rootURL)
+        _packages = State(initialValue: discoveredPackages.isEmpty ? [SetupPackage(name: "blog", path: "content", route: "/{path}")] : discoveredPackages)
     }
 
     var body: some View {
@@ -39,9 +39,16 @@ struct OnboardingView: View {
             }
 
             Section("Content") {
-                TextField("Package name", text: $packageName)
-                TextField("Content folder", text: $contentPath)
-                TextField("Post route", text: $route)
+                ForEach($packages) { $package in
+                    VStack(alignment: .leading) {
+                        TextField("Package name", text: $package.name)
+                        TextField("Content folder", text: $package.path)
+                        TextField("Post route", text: $package.route)
+                        Button("Remove package", systemImage: "minus.circle", action: { removePackage(package.id) })
+                            .labelStyle(.iconOnly)
+                    }
+                }
+                Button("Add content folder", systemImage: "plus", action: addPackage)
             }
         }
         .formStyle(.grouped)
@@ -54,7 +61,7 @@ struct OnboardingView: View {
             }
             ToolbarItem(placement: .confirmationAction) {
                 Button("Create project", action: createConfiguration)
-                    .disabled(command.isEmpty || url.isEmpty || packageName.isEmpty || contentPath.isEmpty || route.isEmpty)
+                    .disabled(command.isEmpty || url.isEmpty || packages.isEmpty || packages.contains { $0.name.isEmpty || $0.path.isEmpty || $0.route.isEmpty })
             }
         }
         .onChange(of: preset) { _, preset in
@@ -89,13 +96,19 @@ struct OnboardingView: View {
                 preset: preset,
                 command: command,
                 url: url,
-                packageName: packageName,
-                contentPath: contentPath,
-                route: route
+                packages: packages
             )
             complete(rootURL)
         } catch {
             errorMessage = error.localizedDescription
         }
+    }
+
+    private func addPackage() {
+        packages.append(SetupPackage(name: "content", path: "content", route: "/{path}"))
+    }
+
+    private func removePackage(_ id: SetupPackage.ID) {
+        packages.removeAll { $0.id == id }
     }
 }

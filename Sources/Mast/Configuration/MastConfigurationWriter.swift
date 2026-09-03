@@ -6,9 +6,7 @@ enum MastConfigurationWriter {
         preset: String,
         command: String,
         url: String,
-        packageName: String,
-        contentPath: String,
-        route: String
+        packages: [SetupPackage]
     ) throws {
         let source = """
         [server]
@@ -16,11 +14,17 @@ enum MastConfigurationWriter {
         command = "\(command)"
         url = "\(url)"
 
-        [content.packages.\(packageName)]
-        path = "\(contentPath)"
-        route = "\(route)"
+        \(packages.map(packageSource).joined(separator: "\n\n"))
         """
 
         try source.write(to: rootURL.appending(path: "mast.toml"), atomically: true, encoding: .utf8)
+    }
+
+    private static func packageSource(_ package: SetupPackage) -> String {
+        """
+        [content.packages.\(package.name)]
+        path = "\(package.path)"
+        route = "\(package.route)"
+        """
     }
 }

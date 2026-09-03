@@ -56,14 +56,28 @@ struct MastConfigurationParserTests {
             preset: "hugo",
             command: "hugo server --port {port}",
             url: "http://127.0.0.1:{port}",
-            packageName: "blog",
-            contentPath: "content",
-            route: "/{path}"
+            packages: [SetupPackage(name: "blog", path: "content", route: "/{path}")]
         )
 
         let source = try String(contentsOf: rootURL.appending(path: "mast.toml"), encoding: .utf8)
         let configuration = try MastConfigurationParser.parse(source)
 
         #expect(configuration.packages.first?.path == "content")
+    }
+
+    @Test
+    func discoversTopLevelFoldersThatContainMarkdown() throws {
+        let rootURL = URL.temporaryDirectory.appending(path: UUID().uuidString)
+        let contentURL = rootURL.appending(path: "content/blog/post")
+        let notesURL = rootURL.appending(path: "notes")
+        try FileManager.default.createDirectory(at: contentURL, withIntermediateDirectories: true)
+        try FileManager.default.createDirectory(at: notesURL, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: rootURL) }
+        try "# Post".write(to: contentURL.appending(path: "index.md"), atomically: true, encoding: .utf8)
+        try "# Note".write(to: notesURL.appending(path: "readme.md"), atomically: true, encoding: .utf8)
+
+        let packages = MarkdownContentDiscovery.suggestedPackages(at: rootURL)
+
+        #expect(packages.map(\.path) == ["content", "notes"])
     }
 }
