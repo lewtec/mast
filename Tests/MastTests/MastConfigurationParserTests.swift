@@ -143,6 +143,31 @@ struct MastConfigurationParserTests {
         #expect(project.posts.map(\.fileURL.lastPathComponent) == ["index.md", "index.mdx"])
     }
 
+    @Test
+    func resolvesPreviewRouteForSelectedPostLanguage() {
+        let package = ContentPackage(
+            name: "posts",
+            path: "content/posts",
+            route: "/{lang}/post/{path}",
+            languages: ["en", "pt"]
+        )
+        let post = Post(
+            fileURL: URL(filePath: "/tmp/hello/index.pt.md"),
+            packageName: "posts",
+            language: "pt",
+            relativePath: "2026/hello world"
+        )
+        let project = Project(
+            rootURL: URL(filePath: "/tmp"),
+            configuration: MastConfiguration(server: ServerConfiguration(preset: "custom", command: "serve", url: "http://127.0.0.1:{port}"), packages: [package]),
+            posts: [post]
+        )
+
+        let url = project.previewURL(for: post, from: URL(string: "http://127.0.0.1:4321/")!)
+
+        #expect(url.absoluteString == "http://127.0.0.1:4321/pt/post/2026/hello%20world")
+    }
+
     @MainActor
     @Test
     func createsPostInSelectedPackageUsingDefaultLanguage() throws {

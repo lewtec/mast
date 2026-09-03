@@ -35,6 +35,7 @@ final class AppModel {
     var setupRootURL: URL?
     var isShowingSetup = false
     private var serverProcess: Process?
+    private var serverURL: URL?
     private var saveTask: Task<Void, Never>?
     private var previewTask: Task<Void, Never>?
 
@@ -145,6 +146,7 @@ final class AppModel {
         previewTask?.cancel()
         previewURL = nil
         previewAddress = nil
+        serverURL = nil
         serverCommand = nil
         serverOutput = ""
         serverStatus = .starting
@@ -209,7 +211,8 @@ final class AppModel {
                         guard !Task.isCancelled, self.serverProcess === process else { return }
                         self.serverStatus = .running
                         self.serverMessage = "Development server is running on port \(port)."
-                        self.previewURL = url
+                        self.serverURL = url
+                        self.updatePreviewRoute()
                         return
                     }
                     try? await Task.sleep(for: .milliseconds(500))
@@ -241,16 +244,25 @@ final class AppModel {
 
         guard let post else {
             editorText = ""
+            updatePreviewRoute()
             return
         }
 
         do {
             editorText = try String(contentsOf: post.fileURL, encoding: .utf8)
+            updatePreviewRoute()
         } catch {
             editorText = ""
             errorMessage = "Mast could not read \(post.fileURL.lastPathComponent): \(error.localizedDescription)"
             isShowingError = true
         }
+    }
+
+    private func updatePreviewRoute() {
+        guard let project, let serverURL else { return }
+        let routeURL = project.previewURL(for: selectedPost, from: serverURL)
+        previewURL = routeURL
+        previewAddress = routeURL.absoluteString
     }
 
     private nonisolated static func connectionFailure(for url: URL) async -> String? {
