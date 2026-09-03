@@ -13,18 +13,17 @@ struct NativeWorkspaceSplitView<Sidebar: View, Content: View, Inspector: View>: 
     }
 
     func makeNSViewController(context: Context) -> NSSplitViewController {
-        let controller = NSSplitViewController()
+        let controller = WorkspaceSplitViewController()
         let sidebarItem = NSSplitViewItem(viewController: NSHostingController(rootView: sidebar))
         sidebarItem.minimumThickness = 220
         sidebarItem.maximumThickness = 800
-        sidebarItem.preferredThicknessFraction = 0.15
 
         let contentItem = NSSplitViewItem(viewController: NSHostingController(rootView: content))
+        contentItem.minimumThickness = 480
 
         let inspectorItem = NSSplitViewItem(viewController: NSHostingController(rootView: inspector))
         inspectorItem.minimumThickness = 320
         inspectorItem.maximumThickness = 800
-        inspectorItem.preferredThicknessFraction = 0.22
 
         controller.addSplitViewItem(sidebarItem)
         controller.addSplitViewItem(contentItem)
@@ -64,5 +63,21 @@ struct NativeWorkspaceSplitView<Sidebar: View, Content: View, Inspector: View>: 
         var sidebarItem: NSSplitViewItem?
         var contentItem: NSSplitViewItem?
         var inspectorItem: NSSplitViewItem?
+    }
+}
+
+private final class WorkspaceSplitViewController: NSSplitViewController {
+    private var hasSetInitialPaneSizes = false
+
+    override func viewDidAppear() {
+        super.viewDidAppear()
+        guard !hasSetInitialPaneSizes else { return }
+        hasSetInitialPaneSizes = true
+
+        DispatchQueue.main.async { [weak self] in
+            guard let self else { return }
+            splitView.setPosition(300, ofDividerAt: 0)
+            splitView.setPosition(splitView.bounds.width - 520, ofDividerAt: 1)
+        }
     }
 }
