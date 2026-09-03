@@ -20,6 +20,7 @@ targets:
     platform: macOS
     sources:
       - path: Sources/Mast
+      - path: Assets.xcassets
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: app.mast.editor

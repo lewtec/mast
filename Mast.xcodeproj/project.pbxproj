@@ -20,6 +20,7 @@
 		3A25B00B908CEAFAD71FB24C /* PackageBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEB5FA73170DC734D618F3AA /* PackageBuilder.swift */; };
 		553B106ACF26E777D2D0DEA8 /* MastApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D701FDC3A64E2679FC5DB89 /* MastApp.swift */; };
 		597178B60759509FD2CB2427 /* PortAllocator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C0D2A554C67A58286005BA8 /* PortAllocator.swift */; };
+		5B1C836DB760192580CD3D63 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 211A2CD8A99FA5A0EB58D229 /* Assets.xcassets */; };
 		5B86A1D195149D44FB792786 /* Project.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D67944C40BA7009B6B79223 /* Project.swift */; };
 		625D7679877A4C9C1DE0E9B5 /* WelcomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E15DAAF5A9D0D6B8DC9C4BDA /* WelcomeView.swift */; };
 		69A3C4B7379E8BBA9AA3E2C8 /* EditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A67E67134771F617DDA5DAFE /* EditorView.swift */; };
@@ -56,6 +57,7 @@
 		06E0E102EADDA08A7B483785 /* MarkdownDiscoveryResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkdownDiscoveryResult.swift; sourceTree = "<group>"; };
 		0C13274E2F8C443ACC965CAA /* PostListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostListView.swift; sourceTree = "<group>"; };
 		15AAFCFE3052F7C38D1332D7 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
+		211A2CD8A99FA5A0EB58D229 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		2664C163BDD308E399C18843 /* ServerStatusIndicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerStatusIndicator.swift; sourceTree = "<group>"; };
 		27B01D46588533900C97F462 /* Mast.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Mast.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2AA14BF2514DD756201CD151 /* SetupPackage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupPackage.swift; sourceTree = "<group>"; };
@@ -189,6 +191,7 @@
 			children = (
 				B9F7CC48814AF6B3A242D7EE /* Sources */,
 				B4434EA9DEFE644A67FD1520 /* Tests */,
+				211A2CD8A99FA5A0EB58D229 /* Assets.xcassets */,
 				49CB7BE4EC0191D68FEC67D8 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -209,6 +212,7 @@
 			buildConfigurationList = 75C3C38E6B13804D96145DBB /* Build configuration list for PBXNativeTarget "Mast" */;
 			buildPhases = (
 				ACEA2BA46CE1F6A7E5298D27 /* Sources */,
+				58DFF06E5AF815B78B564711 /* Resources */,
 			);
 			buildRules = (
 			);
@@ -275,6 +279,17 @@
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		58DFF06E5AF815B78B564711 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5B1C836DB760192580CD3D63 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		1464BB1030CD81BD850DF276 /* Sources */ = {
