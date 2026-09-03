@@ -32,7 +32,6 @@ struct WorkspaceView: View {
         }
         .toolbar {
             ToolbarItemGroup {
-                Button("Toggle sidebar", systemImage: "sidebar.leading", action: toggleSidebar)
                 Button("New post", systemImage: "plus", action: showNewPost)
                 Button("Configure project", systemImage: "slider.horizontal.3", action: showProjectSetup)
                 Button("Edit mast.toml", systemImage: "doc.text", action: showConfiguration)
@@ -68,7 +67,4 @@ struct WorkspaceView: View {
         isShowingProjectSetup = true
     }
 
-    private func toggleSidebar() {
-        columnVisibility = columnVisibility == .all ? .doubleColumn : .all
-    }
 }
