@@ -4,6 +4,7 @@ struct EditorView: View {
     @Binding var text: String
     let post: Post?
     let document: PostDocument?
+    let project: Project
     let save: () -> Void
 
     var body: some View {
@@ -11,7 +12,7 @@ struct EditorView: View {
             if let post, let document {
                 HStack(spacing: 0) {
                     Spacer(minLength: 0)
-                    MarkdownTextEditor(text: $text, document: document, onTextChange: save)
+                    MarkdownTextEditor(text: $text, document: document, project: project, onTextChange: save)
                         .accessibilityLabel("Markdown editor for \(post.title)")
                         .frame(maxWidth: 860, maxHeight: .infinity)
                     Spacer(minLength: 0)

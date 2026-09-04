@@ -28,6 +28,16 @@ enum PostFile {
         return "index.\(pathExtension)"
     }
 
+    static let imageExtensions: Set<String> = ["png", "jpg", "jpeg", "gif", "webp", "svg", "avif", "heic"]
+
+    static func images(beside fileURL: URL) -> [URL] {
+        let folder = fileURL.deletingLastPathComponent()
+        let files = (try? FileManager.default.contentsOfDirectory(at: folder, includingPropertiesForKeys: nil)) ?? []
+        return files
+            .filter { imageExtensions.contains($0.pathExtension.lowercased()) }
+            .sorted { $0.lastPathComponent.localizedStandardCompare($1.lastPathComponent) == .orderedAscending }
+    }
+
     static func indexFiles(in files: [URL], languages: [String]) -> [URL] {
         if languages.isEmpty {
             return files.filter { ["index.md", "index.mdx"].contains($0.lastPathComponent) }

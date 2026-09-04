@@ -7,20 +7,31 @@ struct Project: Equatable, Sendable {
 
     func previewURL(for post: Post?, document: PostDocument? = nil, from serverURL: URL) -> URL {
         guard let post,
-              let package = configuration.packages.first(where: { $0.name == post.packageName })
+              configuration.packages.contains(where: { $0.name == post.packageName })
         else {
             return serverURL
+        }
+        var components = URLComponents(url: serverURL, resolvingAgainstBaseURL: false)
+        components?.path = routePath(for: post, document: document)
+        return components?.url ?? serverURL
+    }
+
+    func routePath(for post: Post, document: PostDocument? = nil) -> String {
+        guard let package = configuration.packages.first(where: { $0.name == post.packageName }) else {
+            return "/"
         }
 
         let document = document ?? post.defaultDocument
         let language = document?.language ?? package.languages.first ?? ""
-        let route = package.route
+        return package.route
             .replacing("{lang}", with: language)
             .replacing("{path}", with: post.relativePath)
+    }
 
-        var components = URLComponents(url: serverURL, resolvingAgainstBaseURL: false)
-        components?.path = route
-        return components?.url ?? serverURL
+    func markdownRoute(for post: Post, document: PostDocument? = nil) -> String {
+        var components = URLComponents()
+        components.path = routePath(for: post, document: document)
+        return components.string ?? routePath(for: post, document: document)
     }
 
     func post(matchingPreviewURL url: URL, from serverURL: URL) -> (post: Post, document: PostDocument)? {

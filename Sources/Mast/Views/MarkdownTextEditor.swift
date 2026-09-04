@@ -5,6 +5,7 @@ import SwiftUI
 struct MarkdownTextEditor: NSViewRepresentable {
     @Binding var text: String
     let document: PostDocument
+    let project: Project
     let onTextChange: () -> Void
 
     func makeCoordinator() -> Coordinator {
@@ -36,6 +37,9 @@ struct MarkdownTextEditor: NSViewRepresentable {
         textView.imageImportHandler = { [weak coordinator = context.coordinator] pasteboard, textView in
             coordinator?.importImage(from: pasteboard, into: textView) ?? false
         }
+        textView.keyDownHandler = { [weak coordinator = context.coordinator] event, textView in
+            coordinator?.completion.handleKey(event, in: textView) ?? false
+        }
 
         let scrollView = NSScrollView()
         scrollView.borderType = .noBorder
@@ -47,22 +51,27 @@ struct MarkdownTextEditor: NSViewRepresentable {
         scrollView.documentView = textView
 
         context.coordinator.highlight(textView)
+        context.coordinator.completion.update(for: textView, document: document, project: project)
         return scrollView
     }
 
     func updateNSView(_ scrollView: NSScrollView, context: Context) {
         context.coordinator.parent = self
-        guard let textView = scrollView.documentView as? NSTextView, textView.string != text else { return }
-        context.coordinator.isApplyingHighlight = true
-        textView.string = text
-        context.coordinator.highlight(textView)
-        context.coordinator.isApplyingHighlight = false
+        guard let textView = scrollView.documentView as? NSTextView else { return }
+        if textView.string != text {
+            context.coordinator.isApplyingHighlight = true
+            textView.string = text
+            context.coordinator.highlight(textView)
+            context.coordinator.isApplyingHighlight = false
+        }
+        context.coordinator.completion.update(for: textView, document: document, project: project)
     }
 
     @MainActor
     final class Coordinator: NSObject, NSTextViewDelegate {
         var parent: MarkdownTextEditor
         var isApplyingHighlight = false
+        let completion = DestinationCompletionController()
 
         init(parent: MarkdownTextEditor) {
             self.parent = parent
@@ -73,6 +82,12 @@ struct MarkdownTextEditor: NSViewRepresentable {
             parent.text = textView.string
             highlight(textView)
             parent.onTextChange()
+            completion.update(for: textView, document: parent.document, project: parent.project)
+        }
+
+        func textViewDidChangeSelection(_ notification: Notification) {
+            guard !isApplyingHighlight, let textView = notification.object as? NSTextView else { return }
+            completion.update(for: textView, document: parent.document, project: parent.project)
         }
 
         func highlight(_ textView: NSTextView) {
@@ -101,6 +116,12 @@ struct MarkdownTextEditor: NSViewRepresentable {
 
 private final class ImageMarkdownTextView: NSTextView {
     var imageImportHandler: ((NSPasteboard, NSTextView) -> Bool)?
+    var keyDownHandler: ((NSEvent, NSTextView) -> Bool)?
+
+    override func keyDown(with event: NSEvent) {
+        if keyDownHandler?(event, self) == true { return }
+        super.keyDown(with: event)
+    }
 
     override func paste(_ sender: Any?) {
         guard imageImportHandler?(NSPasteboard.general, self) != true else { return }

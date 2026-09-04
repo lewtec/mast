@@ -23,6 +23,7 @@ struct WorkspaceView: View {
                 text: $openDocument.text,
                 post: model.selectedPost,
                 document: model.openDocument.document,
+                project: project,
                 save: model.scheduleSave
             ),
             inspector: PreviewPaneView(
