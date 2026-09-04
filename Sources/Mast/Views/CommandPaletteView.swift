@@ -3,6 +3,7 @@ import SwiftUI
 
 struct CommandPaletteView: View {
     let project: Project?
+    let recentProjects: [RecentProject]
     let serverStatus: ServerStatus
     let isPreviewVisible: Bool
     let onCancel: () -> Void
@@ -60,6 +61,7 @@ struct CommandPaletteView: View {
     private var items: [CommandPalette.Item] {
         CommandPalette.items(
             project: project,
+            recentProjects: recentProjects,
             serverStatus: serverStatus,
             isPreviewVisible: isPreviewVisible,
             query: query

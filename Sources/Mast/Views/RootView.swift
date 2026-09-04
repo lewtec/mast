@@ -4,7 +4,6 @@ import UniformTypeIdentifiers
 struct RootView: View {
     @Bindable var model: AppModel
     @Binding var isCommandPalettePresented: Bool
-    @State private var isProjectPickerPresented = false
 
     var body: some View {
         @Bindable var model = model
@@ -13,7 +12,12 @@ struct RootView: View {
             if let project = model.project {
                 WorkspaceView(model: model, project: project)
             } else {
-                WelcomeView(openProject: showProjectPicker)
+                WelcomeView(
+                    recents: model.recents.projects,
+                    openProject: showProjectPicker,
+                    openRecent: openRecent,
+                    removeRecent: removeRecent
+                )
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -21,6 +25,7 @@ struct RootView: View {
             if isCommandPalettePresented {
                 CommandPaletteView(
                     project: model.project,
+                    recentProjects: model.recents.projects,
                     serverStatus: model.server.status,
                     isPreviewVisible: model.isPreviewVisible,
                     onCancel: { isCommandPalettePresented = false },
@@ -28,7 +33,7 @@ struct RootView: View {
                 )
             }
         }
-        .fileImporter(isPresented: $isProjectPickerPresented, allowedContentTypes: [.folder]) { result in
+        .fileImporter(isPresented: $model.isProjectPickerPresented, allowedContentTypes: [.folder]) { result in
             switch result {
             case .success(let url):
                 model.openProject(at: url)
@@ -54,7 +59,15 @@ struct RootView: View {
     }
 
     private func showProjectPicker() {
-        isProjectPickerPresented = true
+        model.isProjectPickerPresented = true
+    }
+
+    private func openRecent(_ project: RecentProject) {
+        model.openProject(at: project.url)
+    }
+
+    private func removeRecent(_ project: RecentProject) {
+        model.recents.remove(project.url)
     }
 
     private func runPaletteItem(_ item: CommandPalette.Item) {
@@ -62,6 +75,8 @@ struct RootView: View {
         switch item.payload {
         case .post(let post):
             model.selectPost(post)
+        case .recentProject(let url):
+            model.openProject(at: url)
         case .action(.openProject):
             showProjectPicker()
         case .action(.startServer):
