@@ -34,37 +34,37 @@ enum ProjectLoader {
             guard resourceValues.isDirectory == true else { continue }
 
             let files = try FileManager.default.contentsOfDirectory(at: folderURL, includingPropertiesForKeys: nil)
-            let postFiles = postFiles(in: files, languages: package.languages)
-            let folderPath = folderURL.path().replacing(packageURL.path(), with: "").trimmingCharacters(in: CharacterSet(charactersIn: "/"))
+            let documents = documents(in: files, languages: package.languages)
+            guard !documents.isEmpty else { continue }
 
-            posts.append(contentsOf: postFiles.map { fileURL in
-                Post(
-                    fileURL: fileURL,
-                    packageName: package.name,
-                    language: language(for: fileURL.lastPathComponent, languages: package.languages),
-                    relativePath: folderPath
-                )
-            })
+            let folderPath = relativePath(of: folderURL, inside: packageURL)
+            posts.append(Post(packageName: package.name, relativePath: folderPath, documents: documents))
         }
 
         return posts
     }
 
-    private static func postFiles(in files: [URL], languages: [String]) -> [URL] {
-        if languages.isEmpty {
-            return files.filter { ["index.md", "index.mdx"].contains($0.lastPathComponent) }
-        }
-
-        return files.filter { fileURL in
-            languages.contains { language in
-                ["index.\(language).md", "index.\(language).mdx"].contains(fileURL.lastPathComponent)
+    private static func documents(in files: [URL], languages: [String]) -> [PostDocument] {
+        PostFile.indexFiles(in: files, languages: languages)
+            .map { fileURL in
+                PostDocument(
+                    fileURL: fileURL,
+                    language: PostFile.language(from: fileURL.lastPathComponent, languages: languages)
+                )
             }
-        }
+            .sorted { lhs, rhs in
+                languageOrder(lhs.language, in: languages) < languageOrder(rhs.language, in: languages)
+            }
     }
 
-    private static func language(for filename: String, languages: [String]) -> String? {
-        languages.first { language in
-            ["index.\(language).md", "index.\(language).mdx"].contains(filename)
-        }
+    private static func languageOrder(_ language: String?, in languages: [String]) -> Int {
+        language.flatMap { languages.firstIndex(of: $0) } ?? languages.count
+    }
+
+    private static func relativePath(of url: URL, inside rootURL: URL) -> String {
+        let rootPath = rootURL.resolvingSymlinksInPath().path()
+        let urlPath = url.resolvingSymlinksInPath().path()
+        guard urlPath.hasPrefix(rootPath) else { return url.lastPathComponent }
+        return String(urlPath.dropFirst(rootPath.count)).trimmingCharacters(in: CharacterSet(charactersIn: "/"))
     }
 }

@@ -9,6 +9,8 @@ struct WorkspaceView: View {
     @State private var isPreviewVisible = true
 
     var body: some View {
+        @Bindable var openDocument = model.openDocument
+
         NativeWorkspaceSplitView(
             isSidebarVisible: $isPostsVisible,
             isInspectorVisible: $isPreviewVisible,
@@ -18,23 +20,25 @@ struct WorkspaceView: View {
                 configureProject: showProjectSetup
             ),
             content: EditorView(
-                text: $model.editorText,
+                text: $openDocument.text,
                 post: model.selectedPost,
+                document: model.openDocument.document,
                 save: model.scheduleSave
             ),
             inspector: PreviewPaneView(
                 url: model.previewURL,
-                address: model.previewAddress,
-                status: model.serverStatus,
-                message: model.serverMessage,
-                command: model.serverCommand,
-                output: model.serverOutput
+                address: model.previewURL?.absoluteString ?? model.server.address,
+                status: model.server.status,
+                message: model.server.message,
+                command: model.server.command,
+                output: model.server.output,
+                onNavigate: model.previewNavigated
             )
         )
         .navigationTitle("Mast")
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .onChange(of: model.selectedPost) { _, post in
-            model.selectPost(post)
+            model.selectedPostChanged(to: post)
         }
         .toolbar {
             ToolbarItem(placement: .navigation) {
@@ -42,7 +46,7 @@ struct WorkspaceView: View {
                     Button("Toggle posts sidebar", systemImage: "sidebar.left") {
                         isPostsVisible.toggle()
                     }
-                    ServerStatusIndicator(status: model.serverStatus, message: model.serverMessage)
+                    ServerStatusIndicator(status: model.server.status, message: model.server.message)
                     Button("Restart server", systemImage: "arrow.clockwise") {
                         model.restartServer()
                     }
@@ -51,21 +55,20 @@ struct WorkspaceView: View {
                 }
             }
             ToolbarItemGroup(placement: .primaryAction) {
-                if languagePosts.count > 1 {
-                    Picker("Language", selection: $model.selectedPost) {
-                        ForEach(languagePosts) { post in
-                            Text(post.language ?? "Default").tag(Optional(post))
+                if let post = model.selectedPost, post.documents.count > 1 {
+                    Picker("Language", selection: $model.selectedDocument) {
+                        ForEach(post.documents) { document in
+                            Text(document.language ?? "Default").tag(Optional(document))
                         }
                     }
                     .pickerStyle(.segmented)
                     .frame(maxWidth: 180)
                 }
 
-                if !missingLanguages.isEmpty {
+                if let post = model.selectedPost, !missingLanguages(for: post).isEmpty {
                     Menu("Add language", systemImage: "plus") {
-                        ForEach(missingLanguages, id: \.self) { language in
+                        ForEach(missingLanguages(for: post), id: \.self) { language in
                             Button(language) {
-                                guard let post = model.selectedPost else { return }
                                 _ = model.addLanguage(language, to: post)
                             }
                         }
@@ -85,8 +88,7 @@ struct WorkspaceView: View {
                 OnboardingView(
                     rootURL: project.rootURL,
                     complete: model.finishSetup,
-                    configuration: project.configuration,
-                    serverOptionsSource: MastConfigurationWriter.serverOptionsSource(from: model.configurationSource)
+                    configuration: project.configuration
                 )
             }
         }
@@ -103,20 +105,10 @@ struct WorkspaceView: View {
         isShowingProjectSetup = true
     }
 
-    private var languagePosts: [Post] {
-        guard let selection = model.selectedPost else { return [] }
-        return project.posts.filter {
-            $0.packageName == selection.packageName && $0.relativePath == selection.relativePath
+    private func missingLanguages(for post: Post) -> [String] {
+        guard let package = project.configuration.packages.first(where: { $0.name == post.packageName }) else {
+            return []
         }
+        return post.missingLanguages(in: package)
     }
-
-    private var missingLanguages: [String] {
-        guard let selection = model.selectedPost,
-              let package = project.configuration.packages.first(where: { $0.name == selection.packageName })
-        else { return [] }
-        return package.languages.filter { language in
-            !languagePosts.contains { $0.language == language }
-        }
-    }
-
 }

@@ -13,7 +13,7 @@ enum MarkdownContentDiscovery {
         var folders: [String: Set<String>] = [:]
         var hasRootMarkdown = false
         while let fileURL = enumerator?.nextObject() as? URL {
-            guard isPostIndex(fileURL) else { continue }
+            guard PostFile.isIndex(fileURL) else { continue }
             let filePath = fileURL.resolvingSymlinksInPath().path()
             let relativePath = filePath.replacing(rootPath, with: "")
             let components = relativePath.split(separator: "/").map(String.init)
@@ -25,7 +25,7 @@ enum MarkdownContentDiscovery {
 
             guard folderComponents.count > 1 else { continue }
             let packagePath = folderComponents.dropLast().joined(separator: "/")
-            if let language = language(for: fileURL) {
+            if let language = PostFile.language(from: fileURL) {
                 folders[packagePath, default: []].insert(language)
             } else if folders[packagePath] == nil {
                 folders[packagePath] = []
@@ -45,15 +45,4 @@ enum MarkdownContentDiscovery {
         )
     }
 
-    private static func isPostIndex(_ fileURL: URL) -> Bool {
-        guard ["md", "mdx"].contains(fileURL.pathExtension) else { return false }
-        let stem = fileURL.deletingPathExtension().lastPathComponent
-        return stem == "index" || stem.hasPrefix("index.")
-    }
-
-    private static func language(for fileURL: URL) -> String? {
-        let stem = fileURL.deletingPathExtension().lastPathComponent
-        guard stem.hasPrefix("index.") else { return nil }
-        return String(stem.dropFirst("index.".count))
-    }
 }

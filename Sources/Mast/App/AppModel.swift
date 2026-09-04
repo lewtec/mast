@@ -1,43 +1,31 @@
 import Foundation
 import Observation
 
-enum ServerStatus: Equatable {
-    case stopped
-    case starting
-    case running
-    case failed
-
-    var label: String {
-        switch self {
-        case .stopped: "Server stopped"
-        case .starting: "Starting server"
-        case .running: "Server running"
-        case .failed: "Server failed"
-        }
-    }
-}
-
 @MainActor
 @Observable
 final class AppModel {
     private(set) var project: Project?
     var selectedPost: Post?
-    var editorText = ""
     var errorMessage: String?
     var isShowingError = false
-    var previewURL: URL?
-    var previewAddress: String?
-    var serverStatus: ServerStatus = .stopped
-    var serverMessage = "Server has not started."
-    var serverCommand: String?
-    var serverOutput = ""
-    var configurationSource = ""
     var setupRootURL: URL?
     var isShowingSetup = false
-    private var serverProcess: ServerProcessGroup?
-    private var serverURL: URL?
-    private var saveTask: Task<Void, Never>?
-    private var previewTask: Task<Void, Never>?
+    let server = DevelopmentServer()
+    let openDocument = OpenDocument()
+
+    var previewURL: URL? {
+        guard let serverURL = server.readyURL else { return nil }
+        guard let project else { return serverURL }
+        return project.previewURL(for: selectedPost, document: openDocument.document, from: serverURL)
+    }
+
+    var selectedDocument: PostDocument? {
+        get { openDocument.document }
+        set {
+            guard let newValue else { return }
+            selectPost(selectedPost, document: newValue)
+        }
+    }
 
     func openProject(at rootURL: URL) {
         let configurationURL = rootURL.appending(path: "mast.toml")
@@ -47,199 +35,73 @@ final class AppModel {
             return
         }
 
+        let loadedProject: Project
         do {
-            let loadedProject = try ProjectLoader.load(at: rootURL)
-            project = loadedProject
-            configurationSource = try String(contentsOf: configurationURL, encoding: .utf8)
-            selectPost(loadedProject.posts.first)
-            startServer(for: loadedProject)
+            loadedProject = try ProjectLoader.load(at: rootURL)
         } catch {
             project = nil
             selectedPost = nil
-            editorText = ""
-            errorMessage = error.localizedDescription
-            isShowingError = true
+            openDocument.close()
+            server.stop()
+            presentError(error.localizedDescription)
+            return
+        }
+
+        project = loadedProject
+        selectPost(loadedProject.posts.first)
+        do {
+            try server.start(for: loadedProject)
+        } catch {
+            presentError(server.message)
         }
     }
 
     func restartServer() {
-        guard let project else { return }
-        startServer(for: project)
-    }
-
-    func stopServer() {
-        let process = serverProcess
-        serverProcess = nil
-        process?.stop()
-        previewTask?.cancel()
-        previewURL = nil
-        previewAddress = nil
-        serverURL = nil
-        serverStatus = .stopped
-        serverMessage = "Development server stopped."
-    }
-
-    func scheduleSave() {
-        guard let post = selectedPost else { return }
-        let text = editorText
-        let delay = project?.configuration.autosaveDelayMilliseconds ?? 1_000
-        saveTask?.cancel()
-        saveTask = Task { [weak self] in
-            try? await Task.sleep(for: .milliseconds(delay))
-            guard !Task.isCancelled else { return }
-            self?.save(text, to: post)
+        do {
+            try server.restart()
+        } catch {
+            presentError(server.message)
         }
     }
 
+    func scheduleSave() {
+        let delay = project?.configuration.autosaveDelayMilliseconds ?? 1_000
+        openDocument.scheduleSave(delayMilliseconds: delay, onError: presentError)
+    }
+
     func save() {
-        guard let post = selectedPost else { return }
-        save(editorText, to: post)
+        do {
+            try openDocument.save()
+        } catch {
+            let name = openDocument.document?.fileURL.lastPathComponent ?? "the post"
+            presentError("Mast could not save \(name): \(error.localizedDescription)")
+        }
     }
 
     func createPost(in package: ContentPackage, slug: String, language: String?) -> Bool {
         guard let project else { return false }
-        guard !slug.isEmpty, !slug.contains("/") else {
-            errorMessage = "A post folder name cannot be empty or contain a slash."
-            isShowingError = true
-            return false
-        }
-
-        let postURL = project.rootURL.appending(path: package.path).appending(path: slug)
-        let filename = language.map { "index.\($0).md" } ?? "index.md"
-        let fileURL = postURL.appending(path: filename)
-
-        guard !FileManager.default.fileExists(atPath: postURL.path()) else {
-            errorMessage = "A post named \(slug) already exists in \(package.name)."
-            isShowingError = true
-            return false
-        }
-
         do {
-            try FileManager.default.createDirectory(at: postURL, withIntermediateDirectories: true)
-            try "".write(to: fileURL, atomically: true, encoding: .utf8)
-            let reloadedProject = try ProjectLoader.load(at: project.rootURL)
-            self.project = reloadedProject
-            let createdPostPath = fileURL.resolvingSymlinksInPath().path()
-            selectPost(reloadedProject.posts.first { $0.fileURL.resolvingSymlinksInPath().path() == createdPostPath })
+            let fileURL = try PostCatalog.create(in: package, slug: slug, language: language, project: project)
+            try reloadProject(selecting: fileURL)
             return true
         } catch {
-            errorMessage = "Mast could not create the post: \(error.localizedDescription)"
-            isShowingError = true
+            presentError(error.localizedDescription)
             return false
         }
     }
 
     func addLanguage(_ language: String, to post: Post) -> Bool {
-        guard let project,
-              let package = project.configuration.packages.first(where: { $0.name == post.packageName }),
-              package.languages.contains(language)
-        else { return false }
-
-        let extensionName = post.fileURL.pathExtension
-        let fileURL = post.fileURL.deletingLastPathComponent().appending(path: "index.\(language).\(extensionName)")
-        guard !FileManager.default.fileExists(atPath: fileURL.path()) else { return false }
-
+        guard let project else { return false }
         do {
-            try "".write(to: fileURL, atomically: true, encoding: .utf8)
-            let reloadedProject = try ProjectLoader.load(at: project.rootURL)
-            self.project = reloadedProject
-            selectPost(reloadedProject.posts.first { $0.fileURL == fileURL })
+            let fileURL = try PostCatalog.addLanguage(language, to: post, in: project)
+            try reloadProject(selecting: fileURL)
             return true
+        } catch PostCatalogError.languageUnavailable, PostCatalogError.languageExists {
+            return false
         } catch {
-            errorMessage = "Mast could not add \(language): \(error.localizedDescription)"
-            isShowingError = true
+            presentError("Mast could not add \(language): \(error.localizedDescription)")
             return false
         }
-    }
-
-    private func save(_ text: String, to post: Post) {
-        do {
-            try text.write(to: post.fileURL, atomically: true, encoding: .utf8)
-        } catch {
-            errorMessage = "Mast could not save \(post.fileURL.lastPathComponent): \(error.localizedDescription)"
-            isShowingError = true
-        }
-    }
-
-    private func startServer(for project: Project) {
-        stopServer()
-        serverCommand = nil
-        serverOutput = ""
-        serverStatus = .starting
-        serverMessage = "Starting development server…"
-        guard let port = PortAllocator.availablePort() else {
-            serverStatus = .failed
-            serverMessage = "Mast could not reserve a port for the development server."
-            return
-        }
-        let command = project.configuration.server.command.replacing("{port}", with: String(port))
-        let address = project.configuration.server.url.replacing("{port}", with: String(port))
-        previewAddress = address
-        serverCommand = command
-        do {
-            let process = try ServerProcessGroup(command: command, currentDirectoryURL: project.rootURL)
-            process.outputHandle.readabilityHandler = { [weak self, weak process] handle in
-            let data = handle.availableData
-            guard !data.isEmpty else {
-                handle.readabilityHandler = nil
-                return
-            }
-            guard let output = String(data: data, encoding: .utf8) else { return }
-            Task { @MainActor [weak self, weak process] in
-                guard let self, let process, self.serverProcess === process else { return }
-                self.appendServerOutput(output)
-            }
-            }
-            Task { @MainActor [weak self, weak process] in
-                guard let process else { return }
-                let terminationStatus = await process.waitForTermination()
-                guard let self, self.serverProcess === process else { return }
-                self.serverProcess = nil
-                self.previewURL = nil
-                self.serverStatus = .failed
-                self.serverMessage = "Development server exited with status \(terminationStatus)."
-            }
-            serverProcess = process
-            let url = URL(string: address)
-            previewTask = Task { [weak self, weak process] in
-                guard let url else {
-                    guard let self else { return }
-                    self.serverStatus = .failed
-                    self.serverMessage = "Preview URL is not valid: \(address)"
-                    return
-                }
-                guard let self else { return }
-                for _ in 0..<20 {
-                    guard let process, !Task.isCancelled, self.serverProcess === process else { return }
-                    guard process.isRunning else {
-                        self.serverStatus = .failed
-                        self.serverMessage = "Development server exited before it became ready."
-                        return
-                    }
-                    if await Self.connectionFailure(for: url) == nil {
-                        guard !Task.isCancelled, self.serverProcess === process else { return }
-                        self.serverStatus = .running
-                        self.serverMessage = "Development server is running on port \(port)."
-                        self.serverURL = url
-                        self.updatePreviewRoute()
-                        return
-                    }
-                    try? await Task.sleep(for: .milliseconds(500))
-                }
-                guard let process, !Task.isCancelled, self.serverProcess === process else { return }
-                self.serverStatus = .failed
-                self.serverMessage = "Mast could not reach \(url.absoluteString) after 10 seconds."
-            }
-        } catch {
-            serverStatus = .failed
-            serverMessage = "Mast could not start the development server: \(error.localizedDescription)"
-            errorMessage = "Mast could not start the development server: \(error.localizedDescription)"
-            isShowingError = true
-        }
-    }
-
-    private func appendServerOutput(_ output: String) {
-        serverOutput = String((serverOutput + output).suffix(6_000))
     }
 
     func finishSetup(at rootURL: URL) {
@@ -248,41 +110,42 @@ final class AppModel {
         openProject(at: rootURL)
     }
 
-    func selectPost(_ post: Post?) {
+    func selectPost(_ post: Post?, document: PostDocument? = nil) {
         selectedPost = post
+        do {
+            try openDocument.open(document: document ?? post?.defaultDocument, in: post)
+        } catch {
+            presentError("Mast could not read \(document?.fileURL.lastPathComponent ?? post?.title ?? "the post"): \(error.localizedDescription)")
+        }
+    }
 
-        guard let post else {
-            editorText = ""
-            updatePreviewRoute()
+    func selectedPostChanged(to post: Post?) {
+        if openDocument.post?.id == post?.id {
             return
         }
+        selectPost(post)
+    }
 
-        do {
-            editorText = try String(contentsOf: post.fileURL, encoding: .utf8)
-            updatePreviewRoute()
-        } catch {
-            editorText = ""
-            errorMessage = "Mast could not read \(post.fileURL.lastPathComponent): \(error.localizedDescription)"
-            isShowingError = true
+    func previewNavigated(to url: URL) {
+        guard let project, let serverURL = server.readyURL else { return }
+        guard let match = project.post(matchingPreviewURL: url, from: serverURL) else { return }
+        if selectedPost?.id == match.post.id, openDocument.document?.id == match.document.id {
+            return
+        }
+        selectPost(match.post, document: match.document)
+    }
+
+    private func reloadProject(selecting fileURL: URL) throws {
+        guard let project else { return }
+        let reloadedProject = try ProjectLoader.load(at: project.rootURL)
+        self.project = reloadedProject
+        if let match = reloadedProject.post(containing: fileURL) {
+            selectPost(match.post, document: match.document)
         }
     }
 
-    private func updatePreviewRoute() {
-        guard let project, let serverURL else { return }
-        let routeURL = project.previewURL(for: selectedPost, from: serverURL)
-        previewURL = routeURL
-        previewAddress = routeURL.absoluteString
-    }
-
-    private nonisolated static func connectionFailure(for url: URL) async -> String? {
-        var request = URLRequest(url: url)
-        request.timeoutInterval = 2
-
-        do {
-            _ = try await URLSession.shared.data(for: request)
-            return nil
-        } catch {
-            return "Mast could not reach \(url.absoluteString): \(error.localizedDescription)"
-        }
+    private func presentError(_ message: String) {
+        errorMessage = message
+        isShowingError = true
     }
 }

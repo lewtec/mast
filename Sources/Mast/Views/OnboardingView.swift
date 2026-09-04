@@ -18,8 +18,7 @@ struct OnboardingView: View {
     init(
         rootURL: URL,
         complete: @escaping (URL) -> Void,
-        configuration: MastConfiguration? = nil,
-        serverOptionsSource: String = ""
+        configuration: MastConfiguration? = nil
     ) {
         let defaults = configuration.map {
             OnboardingDefaults(preset: $0.server.preset, command: $0.server.command, url: $0.server.url)
@@ -37,7 +36,7 @@ struct OnboardingView: View {
             }
         } ?? discovery.packages)
         hasRootMarkdown = discovery.hasRootMarkdown
-        self.serverOptionsSource = serverOptionsSource
+        serverOptionsSource = configuration?.serverOptionsSource ?? ""
         isEditing = configuration != nil
     }
 
@@ -121,13 +120,15 @@ struct OnboardingView: View {
     private func createConfiguration() {
         do {
             try MastConfigurationWriter.write(
-                to: rootURL,
-                preset: preset,
-                command: command,
-                url: url,
-                autosaveDelayMilliseconds: autosaveDelayMilliseconds,
-                packages: packages,
-                serverOptionsSource: serverOptionsSource
+                MastConfiguration(
+                    server: ServerConfiguration(preset: preset, command: command, url: url),
+                    packages: packages.map {
+                        ContentPackage(name: $0.name, path: $0.path, route: $0.route, languages: $0.languages)
+                    },
+                    autosaveDelayMilliseconds: autosaveDelayMilliseconds,
+                    serverOptionsSource: serverOptionsSource
+                ),
+                to: rootURL
             )
             complete(rootURL)
         } catch {

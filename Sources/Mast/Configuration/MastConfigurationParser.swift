@@ -72,8 +72,31 @@ enum MastConfigurationParser {
         return MastConfiguration(
             server: ServerConfiguration(preset: preset, command: command, url: url),
             packages: contentPackages,
-            autosaveDelayMilliseconds: autosaveDelayMilliseconds
+            autosaveDelayMilliseconds: autosaveDelayMilliseconds,
+            serverOptionsSource: serverOptionsSource(from: source)
         )
+    }
+
+    static func serverOptionsSource(from source: String) -> String {
+        var sections: [[String]] = []
+        var currentSection: [String]?
+
+        for line in source.components(separatedBy: .newlines) {
+            if line.hasPrefix("[") && line.hasSuffix("]") {
+                if let currentSection {
+                    sections.append(currentSection)
+                }
+                currentSection = line.hasPrefix("[server.options.") ? [line] : nil
+            } else if currentSection != nil {
+                currentSection?.append(line)
+            }
+        }
+
+        if let currentSection {
+            sections.append(currentSection)
+        }
+
+        return sections.map { $0.joined(separator: "\n").trimmingCharacters(in: .whitespacesAndNewlines) }.joined(separator: "\n\n")
     }
 
     private static func assignEditorValue(key: String, value: String, lineNumber: Int) throws -> Int {
@@ -168,4 +191,10 @@ private enum Section {
 
         throw MastConfigurationError.invalidSection(lineNumber)
     }
+}
+
+private struct PackageBuilder {
+    var path: String?
+    var route: String?
+    var languages: [String] = []
 }

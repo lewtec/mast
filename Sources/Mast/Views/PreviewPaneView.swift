@@ -7,6 +7,7 @@ struct PreviewPaneView: View {
     let message: String
     let command: String?
     let output: String
+    var onNavigate: (URL) -> Void = { _ in }
 
     var body: some View {
         VStack(spacing: 0) {
@@ -24,7 +25,7 @@ struct PreviewPaneView: View {
             Divider()
 
             if let url {
-                PreviewWebView(url: url)
+                PreviewWebView(url: url, onNavigate: onNavigate)
             } else {
                 VStack(spacing: 12) {
                     ContentUnavailableView(

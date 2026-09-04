@@ -24,12 +24,26 @@ enum ImageAssetImporter {
         imageAsset(from: pasteboard) != nil
     }
 
-    static func importImage(from pasteboard: NSPasteboard, beside post: Post) throws -> String? {
+    enum ExistingFilePolicy {
+        case replace
+        case keepBoth
+        case cancel
+    }
+
+    static func importImage(
+        from pasteboard: NSPasteboard,
+        beside fileURL: URL,
+        existingFile: ((String) -> ExistingFilePolicy)? = nil
+    ) throws -> String? {
         guard let asset = imageAsset(from: pasteboard) else {
             throw ImportError.couldNotReadImage
         }
 
-        guard let destination = destination(for: asset.filename, beside: post.fileURL) else {
+        guard let destination = destination(
+            for: asset.filename,
+            beside: fileURL,
+            existingFile: existingFile ?? { filename in promptForExistingFile(named: filename) }
+        ) else {
             return nil
         }
 
@@ -84,13 +98,28 @@ enum ImageAssetImporter {
         return URL(string: value)
     }
 
-    private static func destination(for filename: String, beside postURL: URL) -> URL? {
+    private static func destination(
+        for filename: String,
+        beside postURL: URL,
+        existingFile: (String) -> ExistingFilePolicy
+    ) -> URL? {
         let folder = postURL.deletingLastPathComponent()
         let initialDestination = folder.appending(path: filename)
         guard FileManager.default.fileExists(atPath: initialDestination.path()) else {
             return initialDestination
         }
 
+        switch existingFile(filename) {
+        case .replace:
+            return initialDestination
+        case .keepBoth:
+            return nextAvailableDestination(for: initialDestination)
+        case .cancel:
+            return nil
+        }
+    }
+
+    private static func promptForExistingFile(named filename: String) -> ExistingFilePolicy {
         let alert = NSAlert()
         alert.messageText = "An image named \(filename) already exists"
         alert.informativeText = "Choose whether to replace it or save this image with another name."
@@ -100,11 +129,11 @@ enum ImageAssetImporter {
 
         switch alert.runModal() {
         case .alertFirstButtonReturn:
-            return initialDestination
+            return .replace
         case .alertSecondButtonReturn:
-            return nextAvailableDestination(for: initialDestination)
+            return .keepBoth
         default:
-            return nil
+            return .cancel
         }
     }
 

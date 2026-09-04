@@ -31,8 +31,7 @@ struct MastConfigurationParserTests {
         pasteboard.declareTypes([.tiff], owner: nil)
         pasteboard.setData(representation.tiffRepresentation, forType: .tiff)
 
-        let post = Post(fileURL: postURL, packageName: "posts", language: nil, relativePath: "hello")
-        let markdown = try ImageAssetImporter.importImage(from: pasteboard, beside: post)
+        let markdown = try ImageAssetImporter.importImage(from: pasteboard, beside: postURL)
 
         let imageURLs = try FileManager.default.contentsOfDirectory(
             at: postURL.deletingLastPathComponent(),
@@ -111,12 +110,16 @@ struct MastConfigurationParserTests {
         defer { try? FileManager.default.removeItem(at: rootURL) }
 
         try MastConfigurationWriter.write(
-            to: rootURL,
-            preset: "hugo",
-            command: "hugo server --port {port}",
-            url: "http://127.0.0.1:{port}",
-            autosaveDelayMilliseconds: 1_500,
-            packages: [SetupPackage(name: "blog", path: "content", route: "/{path}", languages: ["pt", "en"])]
+            MastConfiguration(
+                server: ServerConfiguration(
+                    preset: "hugo",
+                    command: "hugo server --port {port}",
+                    url: "http://127.0.0.1:{port}"
+                ),
+                packages: [ContentPackage(name: "blog", path: "content", route: "/{path}", languages: ["pt", "en"])],
+                autosaveDelayMilliseconds: 1_500
+            ),
+            to: rootURL
         )
 
         let source = try String(contentsOf: rootURL.appending(path: "mast.toml"), encoding: .utf8)
@@ -132,23 +135,23 @@ struct MastConfigurationParserTests {
         let rootURL = URL.temporaryDirectory.appending(path: UUID().uuidString)
         try FileManager.default.createDirectory(at: rootURL, withIntermediateDirectories: true)
         defer { try? FileManager.default.removeItem(at: rootURL) }
-        let existingSource = """
+        let configuration = try MastConfigurationParser.parse("""
         [server]
         preset = "hugo"
+        command = "hugo server --port {port}"
+        url = "http://127.0.0.1:{port}"
 
         [server.options.hugo]
         drafts = true
-        """
 
-        try MastConfigurationWriter.write(
-            to: rootURL,
-            preset: "hugo",
-            command: "hugo server --port {port}",
-            url: "http://127.0.0.1:{port}",
-            autosaveDelayMilliseconds: 1_000,
-            packages: [SetupPackage(name: "blog", path: "content", route: "/{path}")],
-            serverOptionsSource: MastConfigurationWriter.serverOptionsSource(from: existingSource)
-        )
+        [content.packages.blog]
+        path = "content"
+        route = "/{path}"
+        """)
+
+        #expect(configuration.serverOptionsSource.contains("[server.options.hugo]\ndrafts = true"))
+
+        try MastConfigurationWriter.write(configuration, to: rootURL)
 
         let writtenSource = try String(contentsOf: rootURL.appending(path: "mast.toml"), encoding: .utf8)
 
@@ -202,33 +205,37 @@ struct MastConfigurationParserTests {
 
         let project = try ProjectLoader.load(at: rootURL)
 
-        #expect(project.posts.map(\.fileURL.lastPathComponent) == ["index.md", "index.mdx"])
+        #expect(project.posts.map(\.relativePath) == ["markdown-post", "mdx-post"])
+        #expect(project.posts.map { $0.documents.map(\.fileURL.lastPathComponent) } == [["index.md"], ["index.mdx"]])
     }
 
-    @MainActor
     @Test
-    func groupsPostLanguagesInThePostList() {
-        let english = Post(
-            fileURL: URL(filePath: "/tmp/hello/index.en.md"),
-            packageName: "posts",
-            language: "en",
-            relativePath: "hello"
-        )
-        let portuguese = Post(
-            fileURL: URL(filePath: "/tmp/hello/index.pt.md"),
-            packageName: "posts",
-            language: "pt",
-            relativePath: "hello"
-        )
+    func groupsLanguageDocumentsOnAPost() throws {
+        let rootURL = URL.temporaryDirectory.appending(path: UUID().uuidString)
+        let postURL = rootURL.appending(path: "content/hello")
+        try FileManager.default.createDirectory(at: postURL, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: rootURL) }
+        try "# En".write(to: postURL.appending(path: "index.en.md"), atomically: true, encoding: .utf8)
+        try "# Pt".write(to: postURL.appending(path: "index.pt.md"), atomically: true, encoding: .utf8)
+        try """
+        [server]
+        preset = "custom"
+        command = "true"
+        url = "http://127.0.0.1:{port}"
 
-        let view = PostListView(
-            posts: [english, portuguese],
-            selection: .constant(english),
-            configureProject: {}
-        )
+        [content.packages.posts]
+        path = "content"
+        languages = ["en", "pt"]
+        route = "/{lang}/{path}"
+        """.write(to: rootURL.appending(path: "mast.toml"), atomically: true, encoding: .utf8)
 
-        #expect(view.displayPosts == [english])
-        #expect(view.languages(for: english) == ["en", "pt"])
+        let project = try ProjectLoader.load(at: rootURL)
+        let post = try #require(project.posts.first)
+
+        #expect(project.posts.count == 1)
+        #expect(post.documents.map(\.language) == ["en", "pt"])
+        #expect(post.languageLabels == ["en", "pt"])
+        #expect(post.missingLanguages(in: try #require(project.configuration.packages.first)).isEmpty)
     }
 
     @Test
@@ -239,21 +246,57 @@ struct MastConfigurationParserTests {
             route: "/{lang}/post/{path}",
             languages: ["en", "pt"]
         )
+        let portuguese = PostDocument(fileURL: URL(filePath: "/tmp/hello/index.pt.md"), language: "pt")
         let post = Post(
-            fileURL: URL(filePath: "/tmp/hello/index.pt.md"),
             packageName: "posts",
-            language: "pt",
-            relativePath: "2026/hello world"
+            relativePath: "2026/hello world",
+            documents: [
+                PostDocument(fileURL: URL(filePath: "/tmp/hello/index.en.md"), language: "en"),
+                portuguese,
+            ]
         )
         let project = Project(
             rootURL: URL(filePath: "/tmp"),
             configuration: MastConfiguration(server: ServerConfiguration(preset: "custom", command: "serve", url: "http://127.0.0.1:{port}"), packages: [package]),
             posts: [post]
         )
+        let serverURL = URL(string: "http://127.0.0.1:4321/")!
 
-        let url = project.previewURL(for: post, from: URL(string: "http://127.0.0.1:4321/")!)
+        let url = project.previewURL(for: post, document: portuguese, from: serverURL)
 
         #expect(url.absoluteString == "http://127.0.0.1:4321/pt/post/2026/hello%20world")
+    }
+
+    @Test
+    func matchesPreviewNavigationToPostLanguage() {
+        let package = ContentPackage(
+            name: "posts",
+            path: "content/posts",
+            route: "/{lang}/post/{path}",
+            languages: ["en", "pt"]
+        )
+        let portuguese = PostDocument(fileURL: URL(filePath: "/tmp/hello/index.pt.md"), language: "pt")
+        let post = Post(
+            packageName: "posts",
+            relativePath: "2026/hello world",
+            documents: [
+                PostDocument(fileURL: URL(filePath: "/tmp/hello/index.en.md"), language: "en"),
+                portuguese,
+            ]
+        )
+        let project = Project(
+            rootURL: URL(filePath: "/tmp"),
+            configuration: MastConfiguration(server: ServerConfiguration(preset: "custom", command: "serve", url: "http://127.0.0.1:{port}"), packages: [package]),
+            posts: [post]
+        )
+        let serverURL = URL(string: "http://127.0.0.1:4321/")!
+        let previewURL = project.previewURL(for: post, document: portuguese, from: serverURL)
+
+        let match = project.post(matchingPreviewURL: previewURL, from: serverURL)
+
+        #expect(match?.post.id == post.id)
+        #expect(match?.document.language == "pt")
+        #expect(project.post(matchingPreviewURL: serverURL, from: serverURL) == nil)
     }
 
     @MainActor
@@ -281,10 +324,12 @@ struct MastConfigurationParserTests {
         #expect(model.createPost(in: package, slug: "hello", language: package.languages.first))
         #expect(FileManager.default.fileExists(atPath: rootURL.appending(path: "content/posts/hello/index.en.md").path()))
         #expect(model.project?.posts.count == 1)
-        #expect(model.selectedPost?.fileURL.lastPathComponent == "index.en.md")
-        let englishPost = try #require(model.selectedPost)
-        #expect(model.addLanguage("pt", to: englishPost))
+        #expect(model.selectedPost?.relativePath == "hello")
+        #expect(model.openDocument.document?.fileURL.lastPathComponent == "index.en.md")
+        let createdPost = try #require(model.selectedPost)
+        #expect(model.addLanguage("pt", to: createdPost))
         #expect(FileManager.default.fileExists(atPath: rootURL.appending(path: "content/posts/hello/index.pt.md").path()))
-        #expect(model.selectedPost?.fileURL.lastPathComponent == "index.pt.md")
+        #expect(model.selectedPost?.documents.map(\.language) == ["en", "pt"])
+        #expect(model.openDocument.document?.fileURL.lastPathComponent == "index.pt.md")
     }
 }
