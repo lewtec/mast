@@ -16,6 +16,25 @@ struct CommandPaletteTests {
     }
 
     @Test
+    func welcomeScreenListsRecentProjectsAfterOpenProject() {
+        let recents = [
+            RecentProject(path: "/opt/sites/blog", openedAt: Date(timeIntervalSince1970: 2)),
+            RecentProject(path: "/opt/sites/docs", openedAt: Date(timeIntervalSince1970: 1)),
+        ]
+        let items = CommandPalette.items(
+            project: nil,
+            recentProjects: recents,
+            serverStatus: .stopped,
+            isPreviewVisible: true,
+            query: ""
+        )
+
+        #expect(items.map(\.title) == ["Open project", "blog", "docs"])
+        #expect(items[1].subtitle == "/opt/sites/blog")
+        #expect(items[1].payload == .recentProject(URL(filePath: "/opt/sites/blog")))
+    }
+
+    @Test
     func projectCatalogIncludesActionsAndPosts() {
         let post = Post(
             packageName: "posts",

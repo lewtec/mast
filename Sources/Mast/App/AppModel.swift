@@ -13,8 +13,14 @@ final class AppModel {
     var isShowingProjectSetup = false
     var isShowingNewPost = false
     var isPreviewVisible = true
+    var isProjectPickerPresented = false
     let server = DevelopmentServer()
     let openDocument = OpenDocument()
+    let recents: RecentProjectsStore
+
+    init(recents: RecentProjectsStore = RecentProjectsStore()) {
+        self.recents = recents
+    }
 
     var previewURL: URL? {
         guard let serverURL = server.readyURL else { return nil }
@@ -31,6 +37,12 @@ final class AppModel {
     }
 
     func openProject(at rootURL: URL) {
+        guard FileManager.default.fileExists(atPath: rootURL.path()) else {
+            recents.remove(rootURL)
+            presentError("Mast could not find \(rootURL.lastPathComponent).")
+            return
+        }
+
         let configurationURL = rootURL.appending(path: "mast.toml")
         guard FileManager.default.fileExists(atPath: configurationURL.path()) else {
             setupRootURL = rootURL
@@ -51,6 +63,7 @@ final class AppModel {
         }
 
         project = loadedProject
+        recents.record(loadedProject.rootURL)
         selectPost(loadedProject.posts.first)
         do {
             try server.start(for: loadedProject)

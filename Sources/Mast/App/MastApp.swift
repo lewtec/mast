@@ -50,6 +50,25 @@ struct MastApp: App {
         .defaultSize(width: 1_280, height: 800)
         .commands {
             CommandGroup(after: .newItem) {
+                Button("Open project…") {
+                    model.isProjectPickerPresented = true
+                }
+                .keyboardShortcut("o")
+
+                if !model.recents.projects.isEmpty {
+                    Menu("Open Recent") {
+                        ForEach(model.recents.projects) { project in
+                            Button(project.name) {
+                                model.openProject(at: project.url)
+                            }
+                        }
+                        Divider()
+                        Button("Clear Menu") {
+                            model.recents.removeAll()
+                        }
+                    }
+                }
+
                 Button("Command palette") {
                     isCommandPalettePresented.toggle()
                 }

@@ -15,6 +15,7 @@ enum CommandPalette {
         enum Payload: Equatable {
             case action(Action)
             case post(Post)
+            case recentProject(URL)
         }
 
         let id: String
@@ -26,11 +27,13 @@ enum CommandPalette {
 
     static func items(
         project: Project?,
+        recentProjects: [RecentProject] = [],
         serverStatus: ServerStatus,
         isPreviewVisible: Bool,
         query: String
     ) -> [Item] {
         var catalog = [openProjectItem]
+        catalog.append(contentsOf: recentProjectItems(recentProjects))
         if let project {
             catalog.append(contentsOf: projectActions(
                 serverStatus: serverStatus,
@@ -102,6 +105,18 @@ private extension CommandPalette {
                 payload: .action(.newPost)
             ),
         ]
+    }
+
+    static func recentProjectItems(_ projects: [RecentProject]) -> [Item] {
+        projects.map { project in
+            Item(
+                id: "recent:\(project.path)",
+                title: project.name,
+                subtitle: project.displayPath,
+                keywords: ["recent", "project", project.path],
+                payload: .recentProject(project.url)
+            )
+        }
     }
 
     static func postItems(in project: Project) -> [Item] {
