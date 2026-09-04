@@ -1,8 +1,35 @@
 import SwiftUI
 
 final class MastAppDelegate: NSObject, NSApplicationDelegate {
+    func applicationDidFinishLaunching(_ notification: Notification) {
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(windowWillClose),
+            name: NSWindow.willCloseNotification,
+            object: nil
+        )
+    }
+
+    func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
+        true
+    }
+
     func applicationWillTerminate(_ notification: Notification) {
         ServerProcessGroup.stopAll()
+    }
+
+    @objc private func windowWillClose(_ notification: Notification) {
+        let closing = notification.object as? NSWindow
+        DispatchQueue.main.async {
+            let hasOpenWindow = NSApp.windows.contains { window in
+                window !== closing
+                    && window.styleMask.contains(.titled)
+                    && (window.isVisible || window.isMiniaturized)
+            }
+            if !hasOpenWindow {
+                NSApp.terminate(nil)
+            }
+        }
     }
 }
 
