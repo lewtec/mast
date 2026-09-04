@@ -13,7 +13,7 @@ struct RootView: View {
                 WorkspaceView(model: model, project: project)
             } else {
                 WelcomeView(
-                    recents: model.recents.projects,
+                    recents: model.recents,
                     openProject: showProjectPicker,
                     openRecent: openRecent,
                     removeRecent: removeRecent
