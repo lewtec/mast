@@ -55,6 +55,11 @@ struct RecentProjectsStoreTests {
         store.remove(blog)
         #expect(store.projects.map(\.name) == ["docs"])
 
+        store.remove(docs)
+        #expect(store.projects.isEmpty)
+
+        store.record(blog)
+        store.record(docs)
         store.removeAll()
         #expect(store.projects.isEmpty)
     }

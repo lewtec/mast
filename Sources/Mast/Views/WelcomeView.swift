@@ -2,17 +2,17 @@ import AppKit
 import SwiftUI
 
 struct WelcomeView: View {
-    let recents: [RecentProject]
+    let recents: RecentProjectsStore
     let openProject: () -> Void
     let openRecent: (RecentProject) -> Void
     let removeRecent: (RecentProject) -> Void
 
     var body: some View {
-        if recents.isEmpty {
+        if recents.projects.isEmpty {
             WelcomeEmptyView(openProject: openProject)
         } else {
             WelcomeRecentsView(
-                recents: recents,
+                recents: recents.projects,
                 openProject: openProject,
                 openRecent: openRecent,
                 removeRecent: removeRecent
@@ -85,6 +85,7 @@ private struct WelcomeRecentsList: View {
     let recents: [RecentProject]
     let openRecent: (RecentProject) -> Void
     let removeRecent: (RecentProject) -> Void
+    @State private var hoveredID: String?
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -98,9 +99,13 @@ private struct WelcomeRecentsList: View {
                     ForEach(recents) { project in
                         WelcomeRecentRow(
                             project: project,
+                            isHighlighted: hoveredID == project.id,
                             open: { openRecent(project) },
-                            remove: { removeRecent(project) }
+                            remove: { remove(project) }
                         )
+                        .onContinuousHover { phase in
+                            updateHover(of: project.id, phase: phase)
+                        }
                     }
                 }
                 .padding(.horizontal, 12)
@@ -109,13 +114,31 @@ private struct WelcomeRecentsList: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
     }
+
+    private func remove(_ project: RecentProject) {
+        removeRecent(project)
+        if hoveredID == project.id {
+            hoveredID = nil
+        }
+    }
+
+    private func updateHover(of id: String, phase: HoverPhase) {
+        switch phase {
+        case .active:
+            hoveredID = id
+        case .ended:
+            if hoveredID == id {
+                hoveredID = nil
+            }
+        }
+    }
 }
 
 private struct WelcomeRecentRow: View {
     let project: RecentProject
+    let isHighlighted: Bool
     let open: () -> Void
     let remove: () -> Void
-    @State private var isHovering = false
 
     var body: some View {
         HStack(spacing: 12) {
@@ -148,14 +171,11 @@ private struct WelcomeRecentRow: View {
                 .labelStyle(.iconOnly)
                 .buttonStyle(.plain)
                 .foregroundStyle(.secondary)
-                .opacity(isHovering ? 1 : 0)
-                .allowsHitTesting(isHovering)
-                .accessibilityHidden(!isHovering)
+                .opacity(isHighlighted ? 1 : 0)
         }
         .padding(.horizontal, 10)
         .padding(.vertical, 10)
-        .background(isHovering ? Color.primary.opacity(0.06) : Color.clear, in: RoundedRectangle(cornerRadius: 8))
-        .onHover { isHovering = $0 }
+        .background(isHighlighted ? Color.primary.opacity(0.06) : Color.clear, in: RoundedRectangle(cornerRadius: 8))
         .contextMenu {
             Button("Remove from Recents", role: .destructive, action: remove)
         }
