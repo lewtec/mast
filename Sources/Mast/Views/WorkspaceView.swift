@@ -3,21 +3,18 @@ import SwiftUI
 struct WorkspaceView: View {
     @Bindable var model: AppModel
     let project: Project
-    @State private var isShowingProjectSetup = false
-    @State private var isShowingNewPost = false
     @State private var isPostsVisible = true
-    @State private var isPreviewVisible = true
 
     var body: some View {
         @Bindable var openDocument = model.openDocument
 
         NativeWorkspaceSplitView(
             isSidebarVisible: $isPostsVisible,
-            isInspectorVisible: $isPreviewVisible,
+            isInspectorVisible: $model.isPreviewVisible,
             sidebar: PostListView(
                 posts: project.posts,
                 selection: $model.selectedPost,
-                configureProject: showProjectSetup
+                configureProject: { model.isShowingProjectSetup = true }
             ),
             content: EditorView(
                 text: $openDocument.text,
@@ -51,7 +48,9 @@ struct WorkspaceView: View {
                     Button("Restart server", systemImage: "arrow.clockwise") {
                         model.restartServer()
                     }
-                    Button("New post", systemImage: "plus", action: showNewPost)
+                    Button("New post", systemImage: "plus") {
+                        model.isShowingNewPost = true
+                    }
                         .labelStyle(.iconOnly)
                 }
             }
@@ -77,14 +76,14 @@ struct WorkspaceView: View {
                 }
 
                 Button(
-                    isPreviewVisible ? "Hide preview" : "Show preview",
+                    model.isPreviewVisible ? "Hide preview" : "Show preview",
                     systemImage: "sidebar.right"
                 ) {
-                    isPreviewVisible.toggle()
+                    model.isPreviewVisible.toggle()
                 }
             }
         }
-        .sheet(isPresented: $isShowingProjectSetup) {
+        .sheet(isPresented: $model.isShowingProjectSetup) {
             NavigationStack {
                 OnboardingView(
                     rootURL: project.rootURL,
@@ -93,17 +92,9 @@ struct WorkspaceView: View {
                 )
             }
         }
-        .sheet(isPresented: $isShowingNewPost) {
+        .sheet(isPresented: $model.isShowingNewPost) {
             NewPostView(packages: project.configuration.packages, create: model.createPost)
         }
-    }
-
-    private func showNewPost() {
-        isShowingNewPost = true
-    }
-
-    private func showProjectSetup() {
-        isShowingProjectSetup = true
     }
 
     private func missingLanguages(for post: Post) -> [String] {

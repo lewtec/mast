@@ -83,15 +83,32 @@ final class DestinationCompletionController {
 
     private func show(_ session: MarkdownDestination.Session, from textView: NSTextView) {
         refreshContent()
-        let caret = textView.selectedRange()
-        let screenRect = textView.firstRect(forCharacterRange: caret, actualRange: nil)
-        let viewRect = textView.convert(screenRect, from: nil)
+        let caret = caretRect(in: textView)
         if popover.isShown {
-            popover.positioningRect = viewRect
+            popover.positioningRect = caret
         } else {
-            popover.show(relativeTo: viewRect, of: textView, preferredEdge: .minY)
+            popover.show(relativeTo: caret, of: textView, preferredEdge: .maxY)
         }
         textView.window?.makeFirstResponder(textView)
+    }
+
+    private func caretRect(in textView: NSTextView) -> NSRect {
+        let range = textView.selectedRange()
+        if let layoutManager = textView.layoutManager, let textContainer = textView.textContainer {
+            let glyphRange = layoutManager.glyphRange(forCharacterRange: range, actualCharacterRange: nil)
+            var rect = layoutManager.boundingRect(forGlyphRange: glyphRange, in: textContainer)
+            rect.origin.x += textView.textContainerOrigin.x
+            rect.origin.y += textView.textContainerOrigin.y
+            if rect.width < 1 { rect.size.width = 1 }
+            if rect.height < 1 {
+                rect.size.height = textView.font?.boundingRectForFont.height ?? 16
+            }
+            return rect
+        }
+
+        let screenRect = textView.firstRect(forCharacterRange: range, actualRange: nil)
+        let windowRect = textView.window?.convertFromScreen(screenRect) ?? screenRect
+        return textView.convert(windowRect, from: nil)
     }
 
     private func refreshContent() {

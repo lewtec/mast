@@ -10,6 +10,9 @@ final class AppModel {
     var isShowingError = false
     var setupRootURL: URL?
     var isShowingSetup = false
+    var isShowingProjectSetup = false
+    var isShowingNewPost = false
+    var isPreviewVisible = true
     let server = DevelopmentServer()
     let openDocument = OpenDocument()
 
@@ -56,12 +59,25 @@ final class AppModel {
         }
     }
 
+    func startServer() {
+        guard let project else { return }
+        do {
+            try server.start(for: project)
+        } catch {
+            presentError(server.message)
+        }
+    }
+
     func restartServer() {
         do {
             try server.restart()
         } catch {
             presentError(server.message)
         }
+    }
+
+    func stopServer() {
+        server.stop()
     }
 
     func scheduleSave() {

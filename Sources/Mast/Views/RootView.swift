@@ -2,7 +2,8 @@ import SwiftUI
 import UniformTypeIdentifiers
 
 struct RootView: View {
-    @State private var model = AppModel()
+    @Bindable var model: AppModel
+    @Binding var isCommandPalettePresented: Bool
     @State private var isProjectPickerPresented = false
 
     var body: some View {
@@ -16,6 +17,17 @@ struct RootView: View {
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .overlay {
+            if isCommandPalettePresented {
+                CommandPaletteView(
+                    project: model.project,
+                    serverStatus: model.server.status,
+                    isPreviewVisible: model.isPreviewVisible,
+                    onCancel: { isCommandPalettePresented = false },
+                    onRun: runPaletteItem
+                )
+            }
+        }
         .fileImporter(isPresented: $isProjectPickerPresented, allowedContentTypes: [.folder]) { result in
             switch result {
             case .success(let url):
@@ -43,5 +55,27 @@ struct RootView: View {
 
     private func showProjectPicker() {
         isProjectPickerPresented = true
+    }
+
+    private func runPaletteItem(_ item: CommandPalette.Item) {
+        isCommandPalettePresented = false
+        switch item.payload {
+        case .post(let post):
+            model.selectPost(post)
+        case .action(.openProject):
+            showProjectPicker()
+        case .action(.startServer):
+            model.startServer()
+        case .action(.restartServer):
+            model.restartServer()
+        case .action(.stopServer):
+            model.stopServer()
+        case .action(.togglePreview):
+            model.isPreviewVisible.toggle()
+        case .action(.configureProject):
+            model.isShowingProjectSetup = true
+        case .action(.newPost):
+            model.isShowingNewPost = true
+        }
     }
 }
