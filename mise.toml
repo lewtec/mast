@@ -31,12 +31,23 @@ alias = "default"
 depends = ["build"]
 run = '''
 set -euo pipefail
-app="build/DerivedData.noindex/Build/Products/Release/Mast.app"
+app="$PWD/build/DerivedData.noindex/Build/Products/Release/Mast.app"
 if [[ ! -d "$app" ]]; then
   echo "run: missing $app" >&2
   exit 1
 fi
-open "$app"
+# Same bundle id as /Applications/Mast.app. Plain `open` activates that copy.
+osascript -e 'tell application id "app.mast.editor" to quit' >/dev/null 2>&1 || true
+for _ in $(seq 1 20); do
+  pgrep -x Mast >/dev/null || break
+  sleep 0.1
+done
+if pgrep -x Mast >/dev/null; then
+  killall Mast >/dev/null 2>&1 || true
+  sleep 0.2
+fi
+echo "run: $app"
+open -n "$app"
 '''
 
 [tasks.test]
