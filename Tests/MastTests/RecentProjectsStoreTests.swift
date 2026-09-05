@@ -43,7 +43,7 @@ struct RecentProjectsStoreTests {
     }
 
     @Test
-    func removesAProjectAndClearsTheList() {
+    func removesAProjectAndClearsTheList() throws {
         let (store, cleanup) = makeStore()
         defer { cleanup() }
 
@@ -52,7 +52,7 @@ struct RecentProjectsStoreTests {
         store.record(blog)
         store.record(docs)
 
-        store.remove(blog)
+        store.remove(try #require(store.projects.first { $0.name == "blog" }))
         #expect(store.projects.map(\.name) == ["docs"])
 
         store.remove(docs)
@@ -100,6 +100,26 @@ struct RecentProjectsStoreTests {
         #expect(RecentProject(path: home, openedAt: .now).displayPath == "~")
         #expect(RecentProject(path: home + "/src/blog", openedAt: .now).displayPath == "~/src/blog")
         #expect(RecentProject(path: "/opt/sites/blog", openedAt: .now).displayPath == "/opt/sites/blog")
+    }
+
+    @Test
+    func removesAStoredPathEvenWhenAURLWouldRenormalizeIt() throws {
+        let suite = "mast.tests.recents.\(UUID().uuidString)"
+        let defaults = try #require(UserDefaults(suiteName: suite))
+        defaults.removePersistentDomain(forName: suite)
+        defer { defaults.removePersistentDomain(forName: suite) }
+
+        let openedAt = Date(timeIntervalSince1970: 1_700_000_000)
+        let stored = RecentProject(path: "/private/tmp/old-blog", openedAt: openedAt)
+        let encoder = JSONEncoder()
+        encoder.dateEncodingStrategy = .iso8601
+        defaults.set(try encoder.encode([stored]), forKey: "recentProjects")
+
+        let store = RecentProjectsStore(defaults: defaults)
+        try #require(store.projects == [stored])
+
+        store.remove(store.projects[0])
+        #expect(store.projects.isEmpty)
     }
 }
 

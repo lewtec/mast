@@ -2,27 +2,24 @@ import AppKit
 import SwiftUI
 
 struct WelcomeView: View {
-    let recents: [RecentProject]
-    let openProject: () -> Void
-    let openRecent: (RecentProject) -> Void
-    let removeRecent: (RecentProject) -> Void
+    @Bindable var model: AppModel
 
     var body: some View {
-        if recents.isEmpty {
-            WelcomeEmptyView(openProject: openProject)
+        if model.recentProjects.isEmpty {
+            WelcomeEmptyView(openProject: showProjectPicker)
         } else {
             HStack(spacing: 0) {
-                WelcomeOpenPane(openProject: openProject)
+                WelcomeOpenPane(openProject: showProjectPicker)
                     .frame(width: 280)
                     .frame(maxHeight: .infinity)
                 Divider()
-                WelcomeRecentsList(
-                    recents: recents,
-                    openRecent: openRecent,
-                    removeRecent: removeRecent
-                )
+                WelcomeRecentsList(model: model)
             }
         }
+    }
+
+    private func showProjectPicker() {
+        model.isProjectPickerPresented = true
     }
 }
 
@@ -63,9 +60,7 @@ private struct WelcomeOpenPane: View {
 }
 
 private struct WelcomeRecentsList: View {
-    let recents: [RecentProject]
-    let openRecent: (RecentProject) -> Void
-    let removeRecent: (RecentProject) -> Void
+    @Bindable var model: AppModel
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -75,11 +70,11 @@ private struct WelcomeRecentsList: View {
                 .padding(.top, 24)
             ScrollView {
                 VStack(spacing: 0) {
-                    ForEach(recents) { project in
+                    ForEach(model.recentProjects) { project in
                         WelcomeRecentRow(
                             project: project,
-                            open: { openRecent(project) },
-                            remove: { removeRecent(project) }
+                            open: { model.openProject(at: project.url) },
+                            remove: { model.removeRecent(project) }
                         )
                     }
                 }
@@ -116,11 +111,11 @@ private struct WelcomeRecentRow: View {
             .accessibilityLabel("Open \(project.name)")
             .accessibilityHint(project.displayPath)
 
-            Spacer(minLength: 8)
+            Spacer(minLength: 12)
 
-            Button("Remove from Recents", systemImage: "minus.circle", action: remove)
-                .labelStyle(.iconOnly)
+            Button("Remove", role: .destructive, action: remove)
                 .buttonStyle(.borderless)
         }
+        .padding(.vertical, 6)
     }
 }

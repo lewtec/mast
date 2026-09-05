@@ -18,7 +18,7 @@ final class RecentProjectsStore {
 
     func record(_ url: URL, at date: Date = .now) {
         let path = RecentProject.normalizedPath(for: url)
-        var next = projects.filter { $0.path != path }
+        var next = projects.filter { !RecentProject.refersToSameLocation($0.path, path) }
         next.insert(RecentProject(path: path, openedAt: date), at: 0)
         if next.count > Self.limit {
             next = Array(next.prefix(Self.limit))
@@ -27,9 +27,16 @@ final class RecentProjectsStore {
         save()
     }
 
+    func remove(_ project: RecentProject) {
+        remove(path: project.path)
+    }
+
     func remove(_ url: URL) {
-        let path = RecentProject.normalizedPath(for: url)
-        projects = projects.filter { $0.path != path }
+        remove(path: RecentProject.normalizedPath(for: url))
+    }
+
+    private func remove(path: String) {
+        projects = projects.filter { !RecentProject.refersToSameLocation($0.path, path) }
         save()
     }
 

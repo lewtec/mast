@@ -25,9 +25,9 @@ struct AppModelTests {
     }
 
     @Test
-    func removingRecentsUpdatesThePublishedList() {
+    func removingRecentsUpdatesThePublishedList() throws {
         let suite = "mast.tests.appmodel.\(UUID().uuidString)"
-        let defaults = UserDefaults(suiteName: suite)!
+        let defaults = try #require(UserDefaults(suiteName: suite))
         defaults.removePersistentDomain(forName: suite)
         defer { defaults.removePersistentDomain(forName: suite) }
 
@@ -40,10 +40,11 @@ struct AppModelTests {
         let model = AppModel(recents: store)
         #expect(model.recentProjects.map(\.name) == ["docs", "blog"])
 
-        model.removeRecent(blog)
+        let storedBlog = try #require(model.recentProjects.first { $0.name == "blog" })
+        model.removeRecent(storedBlog)
         #expect(model.recentProjects.map(\.name) == ["docs"])
 
-        model.removeRecent(docs)
+        model.removeRecent(try #require(model.recentProjects.first))
         #expect(model.recentProjects.isEmpty)
     }
 }
