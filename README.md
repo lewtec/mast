@@ -4,6 +4,10 @@
 
 Mast is a native macOS Markdown editor for blogs that build a site from local content files. It keeps the editor beside a live preview of the running site.
 
+![Editor, post list, and live preview](assets/editor.png)
+
+![Welcome screen with recent projects](assets/welcome.png)
+
 ## Status
 
 Mast is in design. The [v1 specification](SPEC.md) defines the planned project configuration, editor workflow, preview, presets, and image paste behavior.
