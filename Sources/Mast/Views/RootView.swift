@@ -13,7 +13,7 @@ struct RootView: View {
                 WorkspaceView(model: model, project: project)
             } else {
                 WelcomeView(
-                    recents: model.recents,
+                    recents: model.recentProjects,
                     openProject: showProjectPicker,
                     openRecent: openRecent,
                     removeRecent: removeRecent
@@ -25,7 +25,7 @@ struct RootView: View {
             if isCommandPalettePresented {
                 CommandPaletteView(
                     project: model.project,
-                    recentProjects: model.recents.projects,
+                    recentProjects: model.recentProjects,
                     serverStatus: model.server.status,
                     isPreviewVisible: model.isPreviewVisible,
                     onCancel: { isCommandPalettePresented = false },
@@ -67,7 +67,7 @@ struct RootView: View {
     }
 
     private func removeRecent(_ project: RecentProject) {
-        model.recents.remove(project.url)
+        model.removeRecent(project.url)
     }
 
     private func runPaletteItem(_ item: CommandPalette.Item) {

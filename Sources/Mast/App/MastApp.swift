@@ -55,16 +55,16 @@ struct MastApp: App {
                 }
                 .keyboardShortcut("o")
 
-                if !model.recents.projects.isEmpty {
+                if !model.recentProjects.isEmpty {
                     Menu("Open Recent") {
-                        ForEach(model.recents.projects) { project in
+                        ForEach(model.recentProjects) { project in
                             Button(project.name) {
                                 model.openProject(at: project.url)
                             }
                         }
                         Divider()
                         Button("Clear Menu") {
-                            model.recents.removeAll()
+                            model.clearRecents()
                         }
                     }
                 }
