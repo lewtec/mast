@@ -16,10 +16,12 @@ final class AppModel {
     var isProjectPickerPresented = false
     let server = DevelopmentServer()
     let openDocument = OpenDocument()
-    let recents: RecentProjectsStore
+    private(set) var recentProjects: [RecentProject]
+    private let recentsStore: RecentProjectsStore
 
     init(recents: RecentProjectsStore = RecentProjectsStore()) {
-        self.recents = recents
+        recentsStore = recents
+        recentProjects = recents.projects
     }
 
     var previewURL: URL? {
@@ -38,7 +40,7 @@ final class AppModel {
 
     func openProject(at rootURL: URL) {
         guard FileManager.default.fileExists(atPath: rootURL.path()) else {
-            recents.remove(rootURL)
+            removeRecent(rootURL)
             presentError("Mast could not find \(rootURL.lastPathComponent).")
             return
         }
@@ -63,7 +65,7 @@ final class AppModel {
         }
 
         project = loadedProject
-        recents.record(loadedProject.rootURL)
+        remember(loadedProject.rootURL)
         selectPost(loadedProject.posts.first)
         do {
             try server.start(for: loadedProject)
@@ -133,6 +135,16 @@ final class AppModel {
         }
     }
 
+    func removeRecent(_ url: URL) {
+        recentsStore.remove(url)
+        recentProjects = recentsStore.projects
+    }
+
+    func clearRecents() {
+        recentsStore.removeAll()
+        recentProjects = recentsStore.projects
+    }
+
     func finishSetup(at rootURL: URL) {
         isShowingSetup = false
         setupRootURL = nil
@@ -171,6 +183,11 @@ final class AppModel {
         if let match = reloadedProject.post(containing: fileURL) {
             selectPost(match.post, document: match.document)
         }
+    }
+
+    private func remember(_ url: URL) {
+        recentsStore.record(url)
+        recentProjects = recentsStore.projects
     }
 
     private func presentError(_ message: String) {

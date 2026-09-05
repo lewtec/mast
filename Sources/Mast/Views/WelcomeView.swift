@@ -2,21 +2,26 @@ import AppKit
 import SwiftUI
 
 struct WelcomeView: View {
-    let recents: RecentProjectsStore
+    let recents: [RecentProject]
     let openProject: () -> Void
     let openRecent: (RecentProject) -> Void
     let removeRecent: (RecentProject) -> Void
 
     var body: some View {
-        if recents.projects.isEmpty {
+        if recents.isEmpty {
             WelcomeEmptyView(openProject: openProject)
         } else {
-            WelcomeRecentsView(
-                recents: recents.projects,
-                openProject: openProject,
-                openRecent: openRecent,
-                removeRecent: removeRecent
-            )
+            HStack(spacing: 0) {
+                WelcomeOpenPane(openProject: openProject)
+                    .frame(width: 280)
+                    .frame(maxHeight: .infinity)
+                Divider()
+                WelcomeRecentsList(
+                    recents: recents,
+                    openRecent: openRecent,
+                    removeRecent: removeRecent
+                )
+            }
         }
     }
 }
@@ -32,30 +37,6 @@ private struct WelcomeEmptyView: View {
         } actions: {
             Button("Open project", systemImage: "folder", action: openProject)
                 .buttonStyle(.borderedProminent)
-        }
-    }
-}
-
-private struct WelcomeRecentsView: View {
-    let recents: [RecentProject]
-    let openProject: () -> Void
-    let openRecent: (RecentProject) -> Void
-    let removeRecent: (RecentProject) -> Void
-
-    var body: some View {
-        HStack(spacing: 0) {
-            WelcomeOpenPane(openProject: openProject)
-                .frame(width: 280)
-                .frame(maxHeight: .infinity)
-
-            Divider()
-
-            WelcomeRecentsList(
-                recents: recents,
-                openRecent: openRecent,
-                removeRecent: removeRecent
-            )
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
     }
 }
@@ -85,7 +66,6 @@ private struct WelcomeRecentsList: View {
     let recents: [RecentProject]
     let openRecent: (RecentProject) -> Void
     let removeRecent: (RecentProject) -> Void
-    @State private var hoveredID: String?
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -93,19 +73,14 @@ private struct WelcomeRecentsList: View {
                 .font(.headline)
                 .padding(.horizontal, 20)
                 .padding(.top, 24)
-
             ScrollView {
-                LazyVStack(alignment: .leading, spacing: 2) {
+                VStack(spacing: 0) {
                     ForEach(recents) { project in
                         WelcomeRecentRow(
                             project: project,
-                            isHighlighted: hoveredID == project.id,
                             open: { openRecent(project) },
-                            remove: { remove(project) }
+                            remove: { removeRecent(project) }
                         )
-                        .onContinuousHover { phase in
-                            updateHover(of: project.id, phase: phase)
-                        }
                     }
                 }
                 .padding(.horizontal, 12)
@@ -114,70 +89,38 @@ private struct WelcomeRecentsList: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
     }
-
-    private func remove(_ project: RecentProject) {
-        removeRecent(project)
-        if hoveredID == project.id {
-            hoveredID = nil
-        }
-    }
-
-    private func updateHover(of id: String, phase: HoverPhase) {
-        switch phase {
-        case .active:
-            hoveredID = id
-        case .ended:
-            if hoveredID == id {
-                hoveredID = nil
-            }
-        }
-    }
 }
 
 private struct WelcomeRecentRow: View {
     let project: RecentProject
-    let isHighlighted: Bool
     let open: () -> Void
     let remove: () -> Void
 
     var body: some View {
-        HStack(spacing: 12) {
+        HStack {
             Button(action: open) {
-                HStack(spacing: 12) {
-                    Image(systemName: "folder.fill")
-                        .font(.title2)
-                        .foregroundStyle(.tint)
-                        .frame(width: 28)
-                    VStack(alignment: .leading, spacing: 2) {
+                Label {
+                    VStack(alignment: .leading) {
                         Text(project.name)
                             .lineLimit(1)
                         Text(project.displayPath)
                             .foregroundStyle(.secondary)
                             .lineLimit(1)
                     }
-                    Spacer(minLength: 12)
-                    Text(project.openedAt, style: .relative)
-                        .foregroundStyle(.tertiary)
-                        .lineLimit(1)
+                } icon: {
+                    Image(systemName: "folder.fill")
                 }
-                .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
             .help(project.path)
             .accessibilityLabel("Open \(project.name)")
             .accessibilityHint(project.displayPath)
 
-            Button("Remove from Recents", systemImage: "xmark.circle.fill", action: remove)
+            Spacer(minLength: 8)
+
+            Button("Remove from Recents", systemImage: "minus.circle", action: remove)
                 .labelStyle(.iconOnly)
-                .buttonStyle(.plain)
-                .foregroundStyle(.secondary)
-                .opacity(isHighlighted ? 1 : 0)
-        }
-        .padding(.horizontal, 10)
-        .padding(.vertical, 10)
-        .background(isHighlighted ? Color.primary.opacity(0.06) : Color.clear, in: RoundedRectangle(cornerRadius: 8))
-        .contextMenu {
-            Button("Remove from Recents", role: .destructive, action: remove)
+                .buttonStyle(.borderless)
         }
     }
 }
