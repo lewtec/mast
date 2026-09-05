@@ -20,7 +20,24 @@ struct RecentProject: Codable, Equatable, Hashable, Identifiable, Sendable {
     }
 
     static func normalizedPath(for url: URL) -> String {
-        var path = url.standardizedFileURL.path()
+        stripped(url.standardizedFileURL.path())
+    }
+
+    static func refersToSameLocation(_ lhs: String, _ rhs: String) -> Bool {
+        if lhs == rhs {
+            return true
+        }
+        let left = normalizedPath(for: URL(filePath: lhs))
+        let right = normalizedPath(for: URL(filePath: rhs))
+        if left == right {
+            return true
+        }
+        return URL(filePath: lhs).resolvingSymlinksInPath().path()
+            == URL(filePath: rhs).resolvingSymlinksInPath().path()
+    }
+
+    private static func stripped(_ path: String) -> String {
+        var path = path
         if path.count > 1, path.hasSuffix("/") {
             path.removeLast()
         }

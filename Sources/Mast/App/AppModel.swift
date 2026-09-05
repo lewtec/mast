@@ -135,6 +135,11 @@ final class AppModel {
         }
     }
 
+    func removeRecent(_ project: RecentProject) {
+        recentsStore.remove(project)
+        recentProjects = recentsStore.projects
+    }
+
     func removeRecent(_ url: URL) {
         recentsStore.remove(url)
         recentProjects = recentsStore.projects

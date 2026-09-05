@@ -12,12 +12,7 @@ struct RootView: View {
             if let project = model.project {
                 WorkspaceView(model: model, project: project)
             } else {
-                WelcomeView(
-                    recents: model.recentProjects,
-                    openProject: showProjectPicker,
-                    openRecent: openRecent,
-                    removeRecent: removeRecent
-                )
+                WelcomeView(model: model)
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -60,14 +55,6 @@ struct RootView: View {
 
     private func showProjectPicker() {
         model.isProjectPickerPresented = true
-    }
-
-    private func openRecent(_ project: RecentProject) {
-        model.openProject(at: project.url)
-    }
-
-    private func removeRecent(_ project: RecentProject) {
-        model.removeRecent(project.url)
     }
 
     private func runPaletteItem(_ item: CommandPalette.Item) {
